@@ -1,0 +1,40 @@
+@import "../../styles/variables";
+
+.mobileNav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $card-bg;
+    border-top: 1px solid $border-color;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.mobileNavLinks {
+    display: flex;
+    justify-content: space-around;
+}
+
+.mobileNavLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $text-secondary;
+    text-decoration: none;
+    font-size: 0.8rem;
+    svg {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    &.active {
+        color: $accent-purple-light;
+    }
+}
+
+@media (max-width: 992px) {
+    .mobileNav {
+        display: block;
+    }
+}

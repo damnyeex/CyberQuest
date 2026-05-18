@@ -1,0 +1,328 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.courseIntro {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    h1 {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        @media (max-width: 768px) {
+            font-size: 2rem;
+        }
+    }
+
+    .description {
+        color: $text-secondary;
+        font-size: 1.1rem;
+        max-width: 800px;
+    }
+}
+
+.backLink {
+    color: $accent-purple;
+    text-decoration: none;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s;
+
+    &:hover {
+        color: $accent-purple-light;
+    }
+}
+
+// Прогресс-бар курса
+.progressBar {
+    margin: 30px 0;
+    background: $card-bg;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    span {
+        color: $text-primary;
+        strong {
+            color: $accent-cyan;
+        }
+    }
+}
+
+.progressTrack {
+    height: 8px;
+    background: $border-color;
+    width: 200px;
+    border-radius: 4px;
+    overflow: hidden;
+
+    @media (max-width: 480px) {
+        width: 100%;
+    }
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(to right, $accent-purple, $accent-cyan);
+    transition: width 0.3s ease;
+}
+
+// Карточка задания
+.taskCard {
+    background: $card-bg;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    transition:
+        border-color 0.3s,
+        box-shadow 0.3s;
+
+    &:hover {
+        border-color: $accent-purple;
+        box-shadow: 0 5px 15px rgba($accent-purple, 0.15);
+    }
+
+    &.completed {
+        border-color: $success;
+        background: rgba($success, 0.05);
+    }
+}
+
+.taskHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    h2 {
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+
+        svg {
+            color: $accent-purple;
+        }
+
+        @media (max-width: 480px) {
+            font-size: 1.3rem;
+        }
+    }
+}
+
+.taskTag {
+    padding: 5px 10px;
+    background: rgba($accent-purple, 0.2);
+    color: $accent-purple;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+// Блок с кодом/шифром
+.codeBlock {
+    font-family: monospace;
+    background: $primary-dark;
+    padding: 15px;
+    border-radius: 6px;
+    word-break: break-all;
+    margin: 15px 0;
+    border: 1px solid $border-color;
+    color: $accent-cyan;
+    font-size: 1rem;
+}
+
+// Кнопка скачивания
+.downloadBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, $accent-purple, $accent-purple-light);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    margin: 15px 0;
+    transition: all 0.3s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba($accent-purple, 0.4);
+    }
+}
+
+// Поле ввода флага
+.flagInput {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0 10px;
+    flex-wrap: wrap;
+
+    input {
+        flex: 1;
+        min-width: 250px;
+        padding: 12px 15px;
+        background-color: $secondary-dark;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        color: $text-primary;
+        font-family: "Roboto", sans-serif;
+        transition: border-color 0.3s;
+
+        &:focus {
+            outline: none;
+            border-color: $accent-purple;
+        }
+
+        &::placeholder {
+            color: $text-secondary;
+        }
+    }
+}
+
+// Кнопки OSINT
+.osintButtons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+// Сообщения об успехе/ошибке
+.successMsg {
+    color: $success;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+
+    svg {
+        font-size: 1.1rem;
+    }
+}
+
+.errorMsg {
+    color: $danger;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+
+    svg {
+        font-size: 1.1rem;
+    }
+}
+
+// Модальное окно OSINT
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modalContent {
+    background-color: $card-bg;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 420px;
+    width: 90%;
+    border: 1px solid $border-color;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+    h3 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        color: $accent-purple-light;
+    }
+
+    p {
+        color: $text-secondary;
+        margin-bottom: 10px;
+        line-height: 1.6;
+
+        strong {
+            color: $accent-cyan;
+        }
+    }
+}
+
+.modalClose {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: $text-secondary;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    &:hover {
+        color: $text-primary;
+        background: rgba($text-secondary, 0.1);
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .courseIntro {
+        padding: 20px 15px;
+    }
+
+    .taskCard {
+        padding: 20px 15px;
+    }
+
+    .flagInput {
+        flex-direction: column;
+
+        input {
+            min-width: auto;
+        }
+
+        button {
+            width: 100%;
+        }
+    }
+
+    .osintButtons {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+        }
+    }
+
+    .modalContent {
+        padding: 25px 20px;
+    }
+}

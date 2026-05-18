@@ -1,0 +1,34 @@
+@import "../../../styles/variables";
+@import "../../../styles/mixins";
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    font-family: "Roboto", sans-serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &.primary {
+        @include button-primary;
+    }
+
+    &.secondary {
+        background-color: transparent;
+        color: $text-primary;
+        border: 1px solid $border-color;
+        &:hover {
+            border-color: $accent-purple;
+            color: $accent-purple-light;
+        }
+    }
+
+    &.fullWidth {
+        width: 100%;
+    }
+}

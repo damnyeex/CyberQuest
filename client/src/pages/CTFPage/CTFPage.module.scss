@@ -1,0 +1,220 @@
+@import "../../styles/variables";
+
+.ctfTrainer {
+    padding: 40px 0;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+    p {
+        color: $text-secondary;
+    }
+}
+
+.ctfContainer {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+}
+
+.taskMain {
+    background-color: $card-bg;
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid $border-color;
+}
+
+.taskHeader {
+    margin-bottom: 25px;
+    h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+}
+
+.taskMeta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.taskTag {
+    padding: 5px 10px;
+    background-color: rgba($accent-purple, 0.2);
+    color: $accent-purple;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.taskDescription {
+    margin-bottom: 30px;
+    h3 {
+        margin: 20px 0 15px;
+        font-size: 1.3rem;
+        &:first-of-type {
+            margin-top: 0;
+        }
+    }
+    p {
+        color: $text-secondary;
+        margin-bottom: 15px;
+    }
+    code {
+        background: $secondary-dark;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: $accent-cyan;
+    }
+}
+
+.hintSection {
+    background-color: rgba($card-bg, 0.7);
+    border-left: 3px solid $accent-cyan;
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 0 5px 5px 0;
+}
+
+.hintHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    h3 {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+}
+
+.hintContent {
+    margin-top: 10px;
+    color: $text-secondary;
+}
+
+.flagInputSection {
+    h3 {
+        margin-bottom: 15px;
+    }
+    p {
+        color: $text-secondary;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+}
+
+.flagInput {
+    display: flex;
+    gap: 10px;
+    input {
+        flex: 1;
+        padding: 12px 15px;
+        background-color: $secondary-dark;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        color: $text-primary;
+        font-family: "Roboto", sans-serif;
+        &:focus {
+            outline: none;
+            border-color: $accent-purple;
+        }
+    }
+}
+
+.taskSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebarCard {
+    background-color: $card-bg;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid $border-color;
+    h3 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $border-color;
+    }
+    p {
+        color: $text-secondary;
+        margin-bottom: 15px;
+    }
+}
+
+.labControls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.labStatus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.statusIndicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    &.active {
+        background-color: $success;
+        box-shadow: 0 0 10px $success;
+    }
+    &.inactive {
+        background-color: $danger;
+    }
+}
+
+.credentials {
+    background-color: $secondary-dark;
+    padding: 15px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    p {
+        margin-bottom: 5px;
+        span {
+            color: $accent-cyan;
+        }
+    }
+}
+
+.stats {
+    div {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        span:last-child {
+            color: $accent-cyan;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .ctfContainer {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,61 @@
+@import "../../styles/variables";
+
+.footer {
+    background-color: $secondary-dark;
+    padding: 60px 0 30px;
+    margin-top: 60px;
+    border-top: 1px solid $border-color;
+}
+
+.footerContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footerColumn {
+    h3 {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        color: $accent-purple-light;
+    }
+    p {
+        color: $text-secondary;
+        margin-bottom: 20px;
+    }
+    ul {
+        list-style: none;
+        li {
+            margin-bottom: 10px;
+        }
+        a {
+            color: $text-secondary;
+            text-decoration: none;
+            transition: color 0.3s;
+            &:hover {
+                color: $accent-purple-light;
+            }
+        }
+    }
+}
+
+.socialLinks {
+    display: flex;
+    gap: 15px;
+    a {
+        color: $text-secondary;
+        font-size: 1.2rem;
+        &:hover {
+            color: $accent-purple-light;
+        }
+    }
+}
+
+.copyright {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid $border-color;
+    color: $text-secondary;
+    font-size: 0.9rem;
+}

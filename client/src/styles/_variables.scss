@@ -1,0 +1,27 @@
+:root {
+    --primary-dark: #0a0e17;
+    --secondary-dark: #121826;
+    --accent-purple: #8a2be2;
+    --accent-purple-light: #a855f7;
+    --accent-cyan: #00d9ff;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+}
+
+$primary-dark: var(--primary-dark);
+$secondary-dark: var(--secondary-dark);
+$accent-purple: var(--accent-purple);
+$accent-purple-light: var(--accent-purple-light);
+$accent-cyan: var(--accent-cyan);
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$success: var(--success);
+$warning: var(--warning);
+$danger: var(--danger);
+$card-bg: var(--card-bg);
+$border-color: var(--border-color);

@@ -1,0 +1,171 @@
+@import "../../styles/variables";
+
+.dashboard {
+    padding: 40px 0;
+}
+
+.dashboardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+    p {
+        color: $text-secondary;
+    }
+}
+
+.dashboardStats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.statCard {
+    background-color: $card-bg;
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.statIcon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.stat1 .statIcon {
+    background-color: rgba($accent-purple, 0.2);
+    color: $accent-purple;
+}
+.stat2 .statIcon {
+    background-color: rgba($accent-cyan, 0.2);
+    color: $accent-cyan;
+}
+.stat3 .statIcon {
+    background-color: rgba($success, 0.2);
+    color: $success;
+}
+.stat4 .statIcon {
+    background-color: rgba($warning, 0.2);
+    color: $warning;
+}
+
+.statInfo {
+    h3 {
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+    p {
+        color: $text-secondary;
+        font-size: 0.9rem;
+    }
+}
+
+.dashboardContent {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.activeCourses,
+.recentActivity {
+    background-color: $card-bg;
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid $border-color;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    h3 {
+        font-size: 1.5rem;
+    }
+    a {
+        color: $accent-purple;
+        text-decoration: none;
+    }
+}
+
+.courseCard {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid $border-color;
+    &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    h3 {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    p {
+        color: $text-secondary;
+        margin-bottom: 15px;
+    }
+}
+
+.progressText {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: $text-secondary;
+    margin: 5px 0 15px;
+}
+
+.activityItem {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid $border-color;
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.activityIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba($accent-purple, 0.2);
+    color: $accent-purple;
+}
+
+.activityInfo {
+    h4 {
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+    p {
+        color: $text-secondary;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .dashboardContent {
+        grid-template-columns: 1fr;
+    }
+}

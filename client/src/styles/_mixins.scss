@@ -1,0 +1,33 @@
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin gradient-text {
+    background: linear-gradient(to right, $accent-purple-light, $accent-cyan);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+@mixin card-hover {
+    transition:
+        transform 0.3s,
+        box-shadow 0.3s,
+        border-color 0.3s;
+    &:hover {
+        transform: translateY(-5px);
+        border-color: $accent-purple;
+        box-shadow: 0 10px 25px rgba($accent-purple, 0.2);
+    }
+}
+
+@mixin button-primary {
+    background: linear-gradient(135deg, $accent-purple, $accent-purple-light);
+    color: white;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba($accent-purple, 0.4);
+    }
+}
