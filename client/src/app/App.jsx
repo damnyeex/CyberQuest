@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import "./App.scss";
 import Header from "../widgets/Header/Header";
 import Footer from "../widgets/Footer/Footer";
 import MobileNav from "../widgets/MobileNav/MobileNav";
 import HomePage from "../pages/HomePage/HomePage";
 import CoursesPage from "../pages/CoursesPage/CoursesPage";
 import DashboardPage from "../pages/DashboardPage/DashboardPage";
-import CTFPage from "../pages/CTFPage/CTFPage";
 import CourseIntroPage from "../pages/CourseIntroPage/CourseIntroPage";
 import LoginModal from "../features/Auth/LoginModal/LoginModal";
+import CTFPage from "../pages/CTFPage/CTFPage";
 import Notification from "../features/Notification/Notification";
 
 function App() {

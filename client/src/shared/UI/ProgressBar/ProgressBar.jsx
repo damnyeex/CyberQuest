@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./ProgressBar.module.scss";
+import * as styles from "./ProgressBar.module.scss";
 
 const ProgressBar = ({ progress }) => {
     return (

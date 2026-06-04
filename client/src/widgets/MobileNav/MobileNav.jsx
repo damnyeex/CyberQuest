@@ -1,5 +1,8 @@
-import React from "react";
-import styles from "./MobileNav.module.scss";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import * as styles from "./MobileNav.module.scss";
 import {
     FaHome,
     FaBook,
@@ -8,35 +11,31 @@ import {
     FaUser,
 } from "react-icons/fa";
 
-const MobileNav = ({ setCurrentPage, currentPage }) => {
+export default function MobileNav() {
+    const pathname = usePathname();
+
     const items = [
-        { id: "home", icon: FaHome, label: "Главная" },
-        { id: "courses", icon: FaBook, label: "Курсы" },
-        { id: "dashboard", icon: FaTachometerAlt, label: "Дашборд" },
-        { id: "ctf", icon: FaFlag, label: "CTF" },
-        { id: "profile", icon: FaUser, label: "Профиль" },
+        { href: "/", icon: FaHome, label: "Главная" },
+        { href: "/courses", icon: FaBook, label: "Курсы" },
+        { href: "/dashboard", icon: FaTachometerAlt, label: "Дашборд" },
+        { href: "/ctf", icon: FaFlag, label: "CTF" },
+        { href: "#", icon: FaUser, label: "Профиль" },
     ];
 
     return (
         <div className={styles.mobileNav}>
             <div className={styles.mobileNavLinks}>
                 {items.map((item) => (
-                    <a
-                        key={item.id}
-                        href={`#${item.id}`}
-                        className={`${styles.mobileNavLink} ${currentPage === item.id ? styles.active : ""}`}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setCurrentPage(item.id);
-                        }}
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`${styles.mobileNavLink} ${pathname === item.href ? styles.active : ""}`}
                     >
                         <item.icon />
                         <span>{item.label}</span>
-                    </a>
+                    </Link>
                 ))}
             </div>
         </div>
     );
-};
-
-export default MobileNav;
+}

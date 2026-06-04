@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./HomePage.module.scss";
+import * as styles from "./HomePage.module.scss";
 import Button from "../../shared/UI/Button/Button";
 import {
     FaRocket,

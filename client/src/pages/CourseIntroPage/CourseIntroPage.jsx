@@ -1,37 +1,36 @@
-import React, { useState, useEffect } from "react";
-import styles from "./CourseIntroPage.module.scss";
-import Button from "../../shared/UI/Button/Button";
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import * as styles from './CourseIntroPage.module.scss';
+import Button from '@/shared/UI/Button/Button';
+import { useApp } from '@/providers/AppProvider';
 import {
-    FaKey,
-    FaImage,
-    FaSearch,
-    FaDownload,
-    FaCheckCircle,
-    FaTimesCircle,
-} from "react-icons/fa";
+  FaKey, FaImage, FaSearch, FaDownload,
+  FaCheckCircle, FaTimesCircle,
+} from 'react-icons/fa';
 
 const correctFlags = {
-    1: "CyberQuest{rot13_is_easy}",
-    2: "CyberQuest{stego_master}",
-    3: "CyberQuest{jdoe@securecorp.local}",
+  1: 'CyberQuest{rot13_is_easy}',
+  2: 'CyberQuest{stego_master}',
+  3: 'CyberQuest{jdoe@securecorp.local}',
 };
 
-const CourseIntroPage = ({ showNotification }) => {
-    const [completed, setCompleted] = useState(new Set());
-    const [flagInputs, setFlagInputs] = useState({ 1: "", 2: "", 3: "" });
-    const [results, setResults] = useState({ 1: null, 2: null, 3: null });
-    const [osintModalOpen, setOsintModalOpen] = useState(false);
-    const [osintContent, setOsintContent] = useState("");
+export default function CourseIntroPage({ courseId }) {
+  const { showNotification } = useApp();
+  const [completed, setCompleted] = useState(new Set());
+  const [flagInputs, setFlagInputs] = useState({ 1: '', 2: '', 3: '' });
+  const [results, setResults] = useState({ 1: null, 2: null, 3: null });
+  const [osintModalOpen, setOsintModalOpen] = useState(false);
+  const [osintContent, setOsintContent] = useState('');
 
-    const progress = completed.size;
+  const progress = completed.size;
 
-    const updateProgress = () => {
-        if (progress === 3) {
-            showNotification("Поздравляем! Курс пройден!", "success");
-        }
-    };
-
-    useEffect(updateProgress, [progress]);
+  useEffect(() => {
+    if (progress === 3) {
+      showNotification('Поздравляем! Курс пройден!', 'success');
+    }
+  }, [progress, showNotification]);
 
     const submitFlag = (taskId) => {
         const input = flagInputs[taskId].trim();
@@ -60,14 +59,10 @@ const CourseIntroPage = ({ showNotification }) => {
     };
 
     return (
-        <div className={`container ${styles.courseIntro}`}>
-            <a
-                href="#"
-                onClick={() => window.history.back()}
-                className={styles.backLink}
-            >
-                ← Назад к курсам
-            </a>
+         <div className={`container ${styles.courseIntro}`}>
+                <Link href="/courses" className={styles.backLink}>
+                    ← Назад к курсам
+                </Link>
             <h1>Введение в кибербезопасность</h1>
             <p className={styles.description}>Базовый курс для новичков...</p>
 

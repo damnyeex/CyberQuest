@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styles from "./Notification.module.scss";
+import * as styles from "./Notification.module.scss";
 import {
     FaCheckCircle,
     FaExclamationCircle,
