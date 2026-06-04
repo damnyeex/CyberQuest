@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./CTFPage.module.scss";
+import * as styles from "./CTFPage.module.scss";
 import Button from "../../shared/UI/Button/Button";
 import {
     FaChevronDown,

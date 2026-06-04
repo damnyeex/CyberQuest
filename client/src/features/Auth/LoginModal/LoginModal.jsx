@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./LoginModal.module.scss";
+import * as login from "./LoginModal.module.scss";
 import Button from "../../../shared/UI/Button/Button";
 
 const LoginModal = ({ isOpen, onClose, showNotification }) => {
@@ -15,18 +15,18 @@ const LoginModal = ({ isOpen, onClose, showNotification }) => {
     };
 
     return (
-        <div className={styles.modalOverlay} onClick={onClose}>
+        <div className={login.modalOverlay} onClick={onClose}>
             <div
-                className={styles.modalContent}
+                className={login.modalContent}
                 onClick={(e) => e.stopPropagation()}
             >
-                <button className={styles.closeBtn} onClick={onClose}>
+                <button className={login.closeBtn} onClick={onClose}>
                     &times;
                 </button>
                 <h3>Вход в CyberQuest</h3>
                 <p>Введите данные для входа в аккаунт</p>
                 <form onSubmit={handleSubmit}>
-                    <div className={styles.formGroup}>
+                    <div className={login.formGroup}>
                         <label>Email</label>
                         <input
                             type="email"
@@ -35,7 +35,7 @@ const LoginModal = ({ isOpen, onClose, showNotification }) => {
                             required
                         />
                     </div>
-                    <div className={styles.formGroup}>
+                    <div className={login.formGroup}>
                         <label>Пароль</label>
                         <input
                             type="password"
@@ -44,7 +44,7 @@ const LoginModal = ({ isOpen, onClose, showNotification }) => {
                             required
                         />
                     </div>
-                    <div className={styles.formOptions}>
+                    <div className={login.formOptions}>
                         <label>
                             <input type="checkbox" /> Запомнить меня
                         </label>
@@ -53,7 +53,7 @@ const LoginModal = ({ isOpen, onClose, showNotification }) => {
                     <Button type="submit" variant="primary" fullWidth>
                         Войти
                     </Button>
-                    <p className={styles.signupLink}>
+                    <p className={login.signupLink}>
                         Нет аккаунта? <a href="#">Зарегистрироваться</a>
                     </p>
                 </form>

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Footer.module.scss";
+import * as styles from "./Footer.module.scss";
 import { FaDiscord, FaTelegram, FaGithub, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {

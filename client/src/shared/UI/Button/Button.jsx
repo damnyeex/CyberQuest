@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Button.module.scss";
+import * as styles from "./Button.module.scss";
 
 const Button = ({ children, variant = "primary", fullWidth, ...props }) => {
     const className = `${styles.btn} ${styles[variant]} ${fullWidth ? styles.fullWidth : ""}`;

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./DashboardPage.module.scss";
+import * as styles from "./DashboardPage.module.scss";
 import Button from "../../shared/UI/Button/Button";
 import ProgressBar from "../../shared/UI/ProgressBar/ProgressBar";
 import {

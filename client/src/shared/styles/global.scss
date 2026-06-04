@@ -1,0 +1,64 @@
+@use "mixins/mixins" as *;
+
+@use "variables/variables" as *;
+
+@use "./reset.scss";
+
+:root {
+    --primary-dark: #{$primary-dark};
+    --secondary-dark: #{$secondary-dark};
+    --accent-purple: #{$accent-purple};
+    --accent-purple-light: #{$accent-purple-light};
+    --accent-cyan: #{$accent-cyan};
+    --text-primary: #{$text-primary};
+    --text-secondary: #{$text-secondary};
+    --success: #{$success};
+    --warning: #{$warning};
+    --danger: #{$danger};
+    --card-bg: #{$card-bg};
+    --border-color: #{$border-color};
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-roboto), sans-serif;
+    background-color: var(--primary-dark);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-orbitron), sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+// Анимации (можно вынести в миксины)
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
