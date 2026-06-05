@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as styles from "./CoursesPage.module.scss";
-import Button from "../../shared/UI/Button/Button";
-import ProgressBar from "../../shared/UI/ProgressBar/ProgressBar";
+import Button from "@/shared/UI/Button/Button";
+import ProgressBar from "@/shared/UI/ProgressBar/ProgressBar";
 import { FaCode, FaGlobe, FaLock, FaClock, FaSignal } from "react-icons/fa";
 
 const CoursesPage = () => {
