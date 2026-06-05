@@ -1,6 +1,6 @@
 import React from "react";
 import * as styles from "./HomePage.module.scss";
-import Button from "../../shared/UI/Button/Button";
+import Button from "@/shared/UI/Button/Button";
 import {
     FaRocket,
     FaPlayCircle,

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as login from "./LoginModal.module.scss";
-import Button from "../../../shared/UI/Button/Button";
+import Button from "@/shared/UI/Button/Button";
 
 const LoginModal = ({ isOpen, onClose, showNotification }) => {
     const [email, setEmail] = useState("");
