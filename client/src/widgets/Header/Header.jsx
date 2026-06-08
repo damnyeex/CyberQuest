@@ -22,16 +22,22 @@ export default function Header() {
     const { openLoginModal } = useApp();
 
     const navItems = [
-        { href: "/", label: "Главная", icon: FaHome },
-        { href: "/courses", label: "Курсы", icon: FaBook },
-        { href: "/dashboard", label: "Дашборд", icon: FaTachometerAlt },
-        { href: "/ctf", label: "CTF", icon: FaFlag },
-        { href: "#", label: "Рейтинг", icon: FaTrophy },
-        { href: "#", label: "Сообщество", icon: FaUsers },
+        { href: "/", label: "Главная", icon: FaHome, id: "home" },
+        { href: "/courses", label: "Курсы", icon: FaBook, id: "courses" },
+        {
+            href: "/dashboard",
+            label: "Дашборд",
+            icon: FaTachometerAlt,
+            id: "dashboard",
+        },
+        { href: "/ctf", label: "CTF", icon: FaFlag, id: "ctf" },
+        { href: "#", label: "Рейтинг", icon: FaTrophy, id: "rating" },
+        { href: "#", label: "Сообщество", icon: FaUsers, id: "community" },
     ];
 
     const isActive = (href) => {
         if (href === "/") return pathname === "/";
+        if (href === "#") return false;
         return pathname.startsWith(href);
     };
 
@@ -46,7 +52,7 @@ export default function Header() {
                 <nav className={styles.navLinks}>
                     {navItems.map((item) => (
                         <Link
-                            key={item.href}
+                            key={item.id}
                             href={item.href}
                             className={isActive(item.href) ? styles.active : ""}
                         >

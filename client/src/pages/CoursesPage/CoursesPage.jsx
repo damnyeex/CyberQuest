@@ -1,11 +1,99 @@
+"use client";
+
 import React, { useState } from "react";
+import Link from "next/link";
 import * as styles from "./CoursesPage.module.scss";
 import Button from "@/shared/UI/Button/Button";
 import ProgressBar from "@/shared/UI/ProgressBar/ProgressBar";
-import { FaCode, FaGlobe, FaLock, FaClock, FaSignal } from "react-icons/fa";
+import { useApp } from "@/providers/AppProvider";
+import { FaCode, FaGlobe, FaLock, FaClock, FaChartBar } from "react-icons/fa";
+import { useScrollAnimation } from "@/shared/lib/hooks/useScrollAnimation";
+
+function CourseCard({
+    course,
+    id,
+    title,
+    description,
+    icon,
+    difficulty,
+    lessons,
+    progress,
+    slug,
+}) {
+    const getDifficultyText = (difficulty) => {
+        switch (difficulty) {
+            case "beginner":
+                return "Для начинающих";
+            case "intermediate":
+                return "Средний";
+            case "advanced":
+                return "Продвинутый";
+            default:
+                return "";
+        }
+    };
+
+    const getLevelText = (difficulty) => {
+        switch (difficulty) {
+            case "beginner":
+                return "Начальный";
+            case "intermediate":
+                return "Средний";
+            case "advanced":
+                return "Продвинутый";
+            default:
+                return "";
+        }
+    };
+
+    const cardRef = useScrollAnimation({
+        threshold: 0.1,
+        animationClass: styles.fadeInVisible,
+    });
+
+    return (
+        <div ref={cardRef} className={styles.courseCard}>
+            <div className={styles.courseImage}>
+                <course.icon />
+                <div
+                    className={`${styles.courseDifficulty} ${styles[`difficulty-${difficulty}`]}`}
+                >
+                    {getDifficultyText(difficulty)}
+                </div>
+            </div>
+            <div className={styles.courseContent}>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <div className={styles.courseMeta}>
+                    <span>
+                        <FaClock /> {lessons} уроков
+                    </span>
+                    <span>
+                        <FaChartBar /> {getLevelText(difficulty)}
+                    </span>
+                </div>
+                {progress > 0 && (
+                    <div className={styles.courseProgress}>
+                        <ProgressBar progress={progress} />
+                        <div className={styles.progressText}>
+                            <span>Прогресс</span>
+                            <span>{progress}%</span>
+                        </div>
+                    </div>
+                )}
+                <Link href={`/courses/${slug}`} style={{ width: "100%" }}>
+                    <Button variant="primary" fullWidth>
+                        {progress > 0 ? "Продолжить" : "Начать курс"}
+                    </Button>
+                </Link>
+            </div>
+        </div>
+    );
+}
 
 const CoursesPage = () => {
     const [filter, setFilter] = useState("all");
+    const { showNotification } = useApp();
 
     const courses = [
         {
@@ -17,7 +105,7 @@ const CoursesPage = () => {
             difficulty: "beginner",
             lessons: 15,
             progress: 30,
-            link: "course-intro",
+            slug: "intro",
         },
         {
             id: 2,
@@ -28,6 +116,7 @@ const CoursesPage = () => {
             difficulty: "intermediate",
             lessons: 22,
             progress: 70,
+            slug: "web-vulns",
         },
         {
             id: 3,
@@ -38,8 +127,24 @@ const CoursesPage = () => {
             difficulty: "advanced",
             lessons: 18,
             progress: 0,
+            slug: "crypto",
         },
     ];
+
+    const filters = [
+        { key: "all", label: "Все" },
+        { key: "beginner", label: "Для начинающих" },
+        { key: "web", label: "Веб-безопасность" },
+        { key: "crypto", label: "Криптография" },
+        { key: "reverse", label: "Реверс-инжиниринг" },
+    ];
+
+    const handleFilterClick = (filterKey) => {
+        setFilter(filterKey);
+        const filterLabel =
+            filters.find((f) => f.key === filterKey)?.label || filterKey;
+        showNotification(`Фильтр применён: ${filterLabel}`, "info");
+    };
 
     return (
         <section className={styles.courses}>
@@ -52,80 +157,25 @@ const CoursesPage = () => {
                         </p>
                     </div>
                     <div className={styles.coursesFilter}>
-                        <button
-                            className={`${styles.filterBtn} ${filter === "all" ? styles.active : ""}`}
-                            onClick={() => setFilter("all")}
-                        >
-                            Все
-                        </button>
-                        <button
-                            className={`${styles.filterBtn} ${filter === "beginner" ? styles.active : ""}`}
-                            onClick={() => setFilter("beginner")}
-                        >
-                            Для начинающих
-                        </button>
-                        <button className={styles.filterBtn}>
-                            Веб-безопасность
-                        </button>
-                        <button className={styles.filterBtn}>
-                            Криптография
-                        </button>
-                        <button className={styles.filterBtn}>
-                            Реверс-инжиниринг
-                        </button>
+                        {filters.map((f) => (
+                            <button
+                                key={f.key}
+                                className={`${styles.filterBtn} ${filter === f.key ? styles.active : ""}`}
+                                onClick={() => handleFilterClick(f.key)}
+                            >
+                                {f.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
                 <div className={styles.coursesGrid}>
                     {courses.map((course) => (
-                        <div key={course.id} className={styles.courseCard}>
-                            <div className={styles.courseImage}>
-                                <course.icon />
-                                <div
-                                    className={`${styles.courseDifficulty} ${styles[`difficulty-${course.difficulty}`]}`}
-                                >
-                                    {course.difficulty === "beginner"
-                                        ? "Для начинающих"
-                                        : course.difficulty === "intermediate"
-                                          ? "Средний"
-                                          : "Продвинутый"}
-                                </div>
-                            </div>
-                            <div className={styles.courseContent}>
-                                <h3>{course.title}</h3>
-                                <p>{course.description}</p>
-                                <div className={styles.courseMeta}>
-                                    <span>
-                                        <FaClock /> {course.lessons} уроков
-                                    </span>
-                                    <span>
-                                        <FaSignal />{" "}
-                                        {course.difficulty === "beginner"
-                                            ? "Начальный"
-                                            : course.difficulty ===
-                                                "intermediate"
-                                              ? "Средний"
-                                              : "Продвинутый"}
-                                    </span>
-                                </div>
-                                {course.progress > 0 && (
-                                    <div className={styles.courseProgress}>
-                                        <ProgressBar
-                                            progress={course.progress}
-                                        />
-                                        <div className={styles.progressText}>
-                                            <span>Прогресс</span>
-                                            <span>{course.progress}%</span>
-                                        </div>
-                                    </div>
-                                )}
-                                <Button variant="primary" fullWidth>
-                                    {course.progress > 0
-                                        ? "Продолжить"
-                                        : "Начать курс"}
-                                </Button>
-                            </div>
-                        </div>
+                        <CourseCard
+                            key={course.id}
+                            {...course}
+                            course={course}
+                        />
                     ))}
                 </div>
             </div>
