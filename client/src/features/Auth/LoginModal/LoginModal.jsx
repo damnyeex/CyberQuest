@@ -32,6 +32,7 @@ const LoginModal = ({ isOpen, onClose, showNotification }) => {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            placeholder="you@example.com"
                             required
                         />
                     </div>
@@ -41,6 +42,7 @@ const LoginModal = ({ isOpen, onClose, showNotification }) => {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Введите пароль"
                             required
                         />
                     </div>

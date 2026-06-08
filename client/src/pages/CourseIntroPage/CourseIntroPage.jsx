@@ -1,36 +1,40 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import * as styles from './CourseIntroPage.module.scss';
-import Button from '@/shared/UI/Button/Button';
-import { useApp } from '@/providers/AppProvider';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import * as styles from "./CourseIntroPage.module.scss";
+import Button from "@/shared/UI/Button/Button";
+import { useApp } from "@/providers/AppProvider";
 import {
-  FaKey, FaImage, FaSearch, FaDownload,
-  FaCheckCircle, FaTimesCircle,
-} from 'react-icons/fa';
+    FaKey,
+    FaImage,
+    FaSearch,
+    FaDownload,
+    FaCheckCircle,
+    FaTimesCircle,
+} from "react-icons/fa";
 
 const correctFlags = {
-  1: 'CyberQuest{rot13_is_easy}',
-  2: 'CyberQuest{stego_master}',
-  3: 'CyberQuest{jdoe@securecorp.local}',
+    1: "CyberQuest{rot13_is_easy}",
+    2: "CyberQuest{stego_master}",
+    3: "CyberQuest{jdoe@securecorp.local}",
 };
 
-export default function CourseIntroPage({ courseId }) {
-  const { showNotification } = useApp();
-  const [completed, setCompleted] = useState(new Set());
-  const [flagInputs, setFlagInputs] = useState({ 1: '', 2: '', 3: '' });
-  const [results, setResults] = useState({ 1: null, 2: null, 3: null });
-  const [osintModalOpen, setOsintModalOpen] = useState(false);
-  const [osintContent, setOsintContent] = useState('');
+const CourseIntroPage = ({ courseId }) => {
+    const { showNotification } = useApp();
+    const [completed, setCompleted] = useState(new Set());
+    const [flagInputs, setFlagInputs] = useState({ 1: "", 2: "", 3: "" });
+    const [results, setResults] = useState({ 1: null, 2: null, 3: null });
+    const [osintModalOpen, setOsintModalOpen] = useState(false);
+    const [osintContent, setOsintContent] = useState("");
 
-  const progress = completed.size;
+    const progress = completed.size;
 
-  useEffect(() => {
-    if (progress === 3) {
-      showNotification('Поздравляем! Курс пройден!', 'success');
-    }
-  }, [progress, showNotification]);
+    useEffect(() => {
+        if (progress === 3) {
+            showNotification("Поздравляем! Курс пройден!", "success");
+        }
+    }, [progress, showNotification]);
 
     const submitFlag = (taskId) => {
         const input = flagInputs[taskId].trim();
@@ -59,10 +63,10 @@ export default function CourseIntroPage({ courseId }) {
     };
 
     return (
-         <div className={`container ${styles.courseIntro}`}>
-                <Link href="/courses" className={styles.backLink}>
-                    ← Назад к курсам
-                </Link>
+        <div className={`container ${styles.courseIntro}`}>
+            <Link href="/courses" className={styles.backLink}>
+                ← Назад к курсам
+            </Link>
             <h1>Введение в кибербезопасность</h1>
             <p className={styles.description}>Базовый курс для новичков...</p>
 
