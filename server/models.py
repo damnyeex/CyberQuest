@@ -2,7 +2,7 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import UniqueConstraint, Index
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
@@ -167,7 +167,7 @@ class ChallengeSolve(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('challenges.id'), primary_key=True)
     xp_earned = db.Column(db.Integer, default=0)
-    solved_at = db.Column(db.DateTime, default=datetime.utcnow)
+    solved_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     user = db.relationship('User', back_populates='solves')
     challenge = db.relationship('Challenge', back_populates='solves')
