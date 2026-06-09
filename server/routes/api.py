@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify
+import jwt
+from flask import Blueprint, request, jsonify, current_app
 from models import (db, User, Role, Category, DifficultyLevel, Challenge,
                     ChallengeTag, ChallengeSolve, UserProgress, UserCategoryProgress)
 from auth import token_required, admin_required, create_token
-from sqlalchemy import func
+from datetime import datetime, timezone
 
 api_bp = Blueprint('api', __name__)
 

@@ -1,5 +1,6 @@
 from models import db, Role, User, Category, DifficultyLevel, Challenge, ChallengeTag
-from datetime import datetime
+from datetime import datetime, timezone
+
 
 def seed_data():
     # Создаём роли, если их нет
@@ -43,6 +44,7 @@ def seed_data():
     # Пользователь-админ и обычный пользователь для тестов
     admin_role = Role.query.filter_by(name='admin').first()
     student_role = Role.query.filter_by(name='student').first()
+
     if not User.query.filter_by(email='admin@ctf.local').first():
         admin = User(
             email='admin@ctf.local',
@@ -76,6 +78,7 @@ def seed_data():
     web_cat = Category.query.filter_by(name='web_security').first()
     beg_diff = DifficultyLevel.query.filter_by(name='beginner').first()
     admin_user = User.query.filter_by(email='admin@ctf.local').first()
+
     if not Challenge.query.filter_by(slug='test-sql-injection').first():
         challenge = Challenge(
             title='SQL Injection Login Bypass',
