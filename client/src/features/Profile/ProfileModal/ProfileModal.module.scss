@@ -1,0 +1,82 @@
+@import "@/shared/styles/variables/variables";
+@import "@/shared/styles/mixins/mixins";
+
+.loading {
+    text-align: center;
+    color: $text-secondary;
+    padding: 20px;
+}
+
+.profile {
+    text-align: center;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    border: 3px solid $accent-purple;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    background: rgba($accent-purple, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: $accent-purple;
+}
+
+.nickname {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.info {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba($border-color, 0.3);
+    color: $text-secondary;
+
+    svg {
+        color: $accent-purple;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    span {
+        color: $text-primary;
+    }
+}
+
+.roles {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.role {
+    padding: 3px 10px;
+    background: rgba($accent-purple, 0.2);
+    color: $accent-purple-light;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}

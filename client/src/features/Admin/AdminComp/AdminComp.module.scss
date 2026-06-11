@@ -1,0 +1,236 @@
+@import "@/shared/styles/variables/variables";
+@import "@/shared/styles/mixins/mixins";
+
+.adminPage {
+    padding: 40px 0;
+
+    h1 {
+        margin-bottom: 30px;
+    }
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tab {
+    padding: 10px 20px;
+    background: $card-bg;
+    border: 1px solid $border-color;
+    color: $text-secondary;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &.active {
+        background: $accent-purple;
+        color: white;
+        border-color: $accent-purple;
+    }
+
+    &:hover:not(.active) {
+        border-color: $accent-purple;
+        color: $accent-purple-light;
+    }
+}
+
+.actions {
+    margin-bottom: 20px;
+}
+
+// Таблица
+.usersTable {
+    background: $card-bg;
+    border-radius: 10px;
+    border: 1px solid $border-color;
+    overflow-x: auto; // Горизонтальный скролл на маленьких экранах
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap; // Предотвращает перенос текста в ячейках
+}
+
+// Заголовок таблицы
+.tableHead {
+    th {
+        padding: 14px 16px;
+        background: rgba($accent-purple, 0.1);
+        font-weight: 700;
+        color: $accent-purple-light;
+        text-align: left;
+        font-size: 0.9rem;
+        border-bottom: 1px solid $border-color;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+}
+
+// Строки таблицы
+.tableRow {
+    transition: background 0.2s;
+
+    &:hover {
+        background: rgba($text-primary, 0.02);
+    }
+
+    &:not(:last-child) {
+        border-bottom: 1px solid rgba($border-color, 0.5);
+    }
+
+    td {
+        padding: 12px 16px;
+        color: $text-primary;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+}
+
+// ID (узкая колонка)
+.colId {
+    width: 60px;
+    color: $text-secondary !important;
+    font-family: monospace;
+}
+
+// Email
+.colEmail {
+    min-width: 180px;
+    word-break: break-all;
+    white-space: normal;
+}
+
+// Ник
+.colNick {
+    min-width: 120px;
+}
+
+// XP
+.colXp {
+    width: 80px;
+    text-align: center;
+}
+
+// Роли
+.colRoles {
+    min-width: 100px;
+}
+
+// Статус
+.colStatus {
+    width: 90px;
+    text-align: center;
+}
+
+// Действия
+.colActions {
+    min-width: 240px;
+}
+
+.rowActions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+// Модалка изменения XP
+.xpModal {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    margin-top: 8px;
+    background: $primary-dark;
+    border-radius: 6px;
+    align-items: center;
+
+    input {
+        width: 100px;
+        padding: 8px 12px;
+        background: $secondary-dark;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        color: $text-primary;
+        font-size: 0.9rem;
+
+        &:focus {
+            outline: none;
+            border-color: $accent-purple;
+        }
+    }
+}
+
+// Пагинация
+.pagination {
+    display: flex;
+    gap: 6px;
+    margin-top: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pageBtn {
+    min-width: 38px;
+    height: 38px;
+    background: $card-bg;
+    border: 1px solid $border-color;
+    color: $text-secondary;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.active {
+        background: $accent-purple;
+        color: white;
+        border-color: $accent-purple;
+    }
+
+    &:hover:not(.active) {
+        border-color: $accent-purple;
+        color: $accent-purple-light;
+    }
+}
+
+// Логи
+.logs {
+    background: $card-bg;
+    border-radius: 10px;
+    border: 1px solid $border-color;
+    padding: 20px;
+}
+
+.logItem {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba($border-color, 0.5);
+    color: $text-secondary;
+    font-family: monospace;
+    font-size: 0.9rem;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .tableHead th,
+    .tableRow td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    .colActions {
+        min-width: 200px;
+    }
+
+    .rowActions {
+        gap: 4px;
+    }
+}
