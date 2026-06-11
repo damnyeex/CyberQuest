@@ -17,7 +17,7 @@ function App() {
 
     const showNotification = (message, type = "info") => {
         setNotification({ message, type });
-        setTimeout(() => setNotification(null), 5000);
+        setTimeout(() => setNotification(null), 3000);
     };
 
     const renderPage = () => {

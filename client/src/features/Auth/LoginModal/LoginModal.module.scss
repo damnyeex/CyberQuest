@@ -1,55 +1,32 @@
-@import "../../../shared/styles/variables/variables";
-@import "../../../shared/styles/mixins/mixins";
+@import "@/shared/styles/variables/variables";
+@import "@/shared/styles/mixins/mixins";
 
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modalContent {
-    background-color: $card-bg;
-    border-radius: 10px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    border: 1px solid $border-color;
-    position: relative;
-    h3 {
-        font-size: 1.5rem;
-        margin-bottom: 5px;
-    }
-    p {
-        color: $text-secondary;
-        margin-bottom: 20px;
-    }
-}
-
-.closeBtn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
+.subtitle {
     color: $text-secondary;
-    font-size: 1.5rem;
-    cursor: pointer;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.error {
+    background: rgba($danger, 0.1);
+    border: 1px solid $danger;
+    color: $danger;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
 }
 
 .formGroup {
     margin-bottom: 20px;
+
     label {
         display: block;
         margin-bottom: 8px;
         color: $text-secondary;
+        font-size: 0.9rem;
     }
+
     input {
         width: 100%;
         padding: 12px 15px;
@@ -58,9 +35,20 @@
         border-radius: 6px;
         color: $text-primary;
         font-family: "Roboto", sans-serif;
+        transition: border-color 0.3s;
+
         &:focus {
             outline: none;
             border-color: $accent-purple;
+        }
+
+        &::placeholder {
+            color: $text-secondary;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
     }
 }
@@ -70,12 +58,28 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+
     label {
         color: $text-secondary;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        input[type="checkbox"] {
+            accent-color: $accent-purple;
+        }
     }
+
     a {
         color: $accent-purple;
         text-decoration: none;
+        font-size: 0.9rem;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
 }
 
@@ -83,8 +87,14 @@
     text-align: center;
     margin-top: 20px;
     color: $text-secondary;
+    font-size: 0.95rem;
+
     a {
         color: $accent-purple;
         text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
 }

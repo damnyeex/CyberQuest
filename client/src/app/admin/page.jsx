@@ -1,11 +1,12 @@
 "use client";
-import DashboardPage from "@/pages/DashboardPage/DashboardPage";
+
+import AdminComp from "@/features/Admin/AdminComp/AdminComp";
 import ProtectedRoute from "@/shared/lib/ProtectedRoute/ProtectedRoute";
 
-export default function Page() {
+export default function AdminPage() {
     return (
         <ProtectedRoute>
-            <DashboardPage />
+            <AdminComp />
         </ProtectedRoute>
     );
 }

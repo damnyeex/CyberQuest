@@ -1,6 +1,10 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
 import * as styles from "./HomePage.module.scss";
 import Button from "@/shared/UI/Button/Button";
+import { useApp } from "@/providers/AppProvider";
 import {
     FaRocket,
     FaPlayCircle,
@@ -28,6 +32,8 @@ function FeatureCard({ icon, title, description, index }) {
 }
 
 const HomePage = () => {
+    const { isAuthenticated } = useApp();
+
     const features = [
         {
             icon: <FaLaptopCode />,
@@ -54,6 +60,7 @@ const HomePage = () => {
                 "Общайтесь с единомышленниками, задавайте вопросы, формируйте команды для участия в CTF-соревнованиях.",
         },
     ];
+
     return (
         <>
             <section className={styles.hero}>
@@ -69,9 +76,19 @@ const HomePage = () => {
                                 участниками и повышайте свои навыки.
                             </p>
                             <div className={styles.heroCta}>
-                                <Button variant="primary">
-                                    <FaRocket /> Начать обучение
-                                </Button>
+                                {isAuthenticated ? (
+                                    <Link href="/courses">
+                                        <Button variant="primary">
+                                            <FaRocket /> К курсам
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Link href="/auth/register">
+                                        <Button variant="primary">
+                                            <FaRocket /> Начать обучение
+                                        </Button>
+                                    </Link>
+                                )}
                                 <Button variant="secondary">
                                     <FaPlayCircle /> Демо-тур
                                 </Button>
@@ -92,15 +109,13 @@ const HomePage = () => {
                         </p>
                     </div>
                     <div className={styles.featuresGrid}>
-                        <div className={styles.featuresGrid}>
-                            {features.map((feature, index) => (
-                                <FeatureCard
-                                    key={index}
-                                    {...feature}
-                                    index={index}
-                                />
-                            ))}
-                        </div>
+                        {features.map((feature, index) => (
+                            <FeatureCard
+                                key={index}
+                                {...feature}
+                                index={index}
+                            />
+                        ))}
                     </div>
                 </div>
             </section>

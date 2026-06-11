@@ -1,12 +1,18 @@
+"use client";
+
 import React from "react";
 import * as styles from "./Footer.module.scss";
+import { useApp } from "@/providers/AppProvider";
 import { FaDiscord, FaTelegram, FaGithub, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
+    const { isAuthenticated } = useApp();
+
     return (
         <footer className={styles.footer}>
             <div className="container">
                 <div className={styles.footerContent}>
+                    {/* Колонка «CyberQuest» — всегда видна */}
                     <div className={styles.footerColumn}>
                         <h3>CyberQuest</h3>
                         <p>
@@ -28,46 +34,56 @@ const Footer = () => {
                             </a>
                         </div>
                     </div>
-                    <div className={styles.footerColumn}>
-                        <h3>Обучение</h3>
-                        <ul>
-                            <li>
-                                <a href="#">Курсы</a>
-                            </li>
-                            <li>
-                                <a href="#">CTF-задачи</a>
-                            </li>
-                            <li>
-                                <a href="#">Лаборатории</a>
-                            </li>
-                            <li>
-                                <a href="#">Дорожные карты</a>
-                            </li>
-                            <li>
-                                <a href="#">Сертификация</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className={styles.footerColumn}>
-                        <h3>Сообщество</h3>
-                        <ul>
-                            <li>
-                                <a href="#">Форум</a>
-                            </li>
-                            <li>
-                                <a href="#">Команды</a>
-                            </li>
-                            <li>
-                                <a href="#">Соревнования</a>
-                            </li>
-                            <li>
-                                <a href="#">Блог</a>
-                            </li>
-                            <li>
-                                <a href="#">Партнеры</a>
-                            </li>
-                        </ul>
-                    </div>
+
+                    {/* «Обучение» — только для авторизованных */}
+                    {isAuthenticated && (
+                        <div className={styles.footerColumn}>
+                            <h3>Обучение</h3>
+                            <ul>
+                                <li>
+                                    <a href="#">Курсы</a>
+                                </li>
+                                <li>
+                                    <a href="#">CTF-задачи</a>
+                                </li>
+                                <li>
+                                    <a href="#">Лаборатории</a>
+                                </li>
+                                <li>
+                                    <a href="#">Дорожные карты</a>
+                                </li>
+                                <li>
+                                    <a href="#">Сертификация</a>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* «Сообщество» — только для авторизованных */}
+                    {isAuthenticated && (
+                        <div className={styles.footerColumn}>
+                            <h3>Сообщество</h3>
+                            <ul>
+                                <li>
+                                    <a href="#">Форум</a>
+                                </li>
+                                <li>
+                                    <a href="#">Команды</a>
+                                </li>
+                                <li>
+                                    <a href="#">Соревнования</a>
+                                </li>
+                                <li>
+                                    <a href="#">Блог</a>
+                                </li>
+                                <li>
+                                    <a href="#">Партнеры</a>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* «Компания» — всегда видна */}
                     <div className={styles.footerColumn}>
                         <h3>Компания</h3>
                         <ul>
