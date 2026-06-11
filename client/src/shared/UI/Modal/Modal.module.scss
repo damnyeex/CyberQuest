@@ -1,0 +1,57 @@
+@import "@/shared/styles/variables/variables";
+@import "@/shared/styles/mixins/mixins";
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modalContent {
+    background-color: $card-bg;
+    border-radius: 10px;
+    width: 90%;
+    border: 1px solid $border-color;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+        font-size: 1.3rem;
+        margin: 0;
+    }
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: $text-secondary;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s;
+
+    &:hover {
+        color: $text-primary;
+    }
+}
+
+.modalBody {
+    padding: 25px;
+}

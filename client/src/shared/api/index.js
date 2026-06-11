@@ -1,0 +1,14 @@
+export { $host, $authHost } from "./client";
+export { authApi } from "./auth.api";
+export { challengesApi } from "./challenges.api";
+export { categoriesApi } from "./categories.api";
+export { difficultiesApi } from "./difficulties.api";
+export { tagsApi } from "./tags.api";
+export { userApi } from "./user.api";
+export { progressApi } from "./progress.api";
+export { subscriptionApi } from "./subscription.api";
+export { teamsApi } from "./teams.api";
+export { duelsApi } from "./duels.api";
+export { forumApi } from "./forum.api";
+export { teacherApi } from "./teacher.api";
+export { adminApi } from "./admin.api";

@@ -15,11 +15,20 @@ import {
     FaUsers,
     FaUser,
     FaBars,
+    FaSignOutAlt,
+    FaUserShield,
 } from "react-icons/fa";
 
 export default function Header() {
     const pathname = usePathname();
-    const { openLoginModal } = useApp();
+    const {
+        isAuthenticated,
+        isAdmin,
+        user,
+        openLoginModal,
+        openProfileModal,
+        logout,
+    } = useApp();
 
     const navItems = [
         { href: "/", label: "Главная", icon: FaHome, id: "home" },
@@ -49,28 +58,54 @@ export default function Header() {
                     <span>CyberQuest</span>
                 </Link>
 
-                <nav className={styles.navLinks}>
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.id}
-                            href={item.href}
-                            className={isActive(item.href) ? styles.active : ""}
-                        >
-                            <item.icon /> {item.label}
-                        </Link>
-                    ))}
-                </nav>
+                {/* Навигация — только для авторизованных */}
+                {isAuthenticated && (
+                    <nav className={styles.navLinks}>
+                        {navItems.map((item) => (
+                            <Link
+                                key={item.id}
+                                href={item.href}
+                                className={
+                                    isActive(item.href) ? styles.active : ""
+                                }
+                            >
+                                <item.icon /> {item.label}
+                            </Link>
+                        ))}
+                    </nav>
+                )}
 
                 <div className={styles.userMenu}>
-                    <Button variant="secondary">
-                        <FaUser /> Профиль
-                    </Button>
-                    <Button variant="primary" onClick={openLoginModal}>
-                        Вход
-                    </Button>
-                    <button className={styles.mobileMenuBtn}>
-                        <FaBars />
-                    </button>
+                    {isAuthenticated ? (
+                        <>
+                            {isAdmin && (
+                                <Link href="/admin">
+                                    <Button variant="secondary">
+                                        <FaUserShield /> Панель
+                                    </Button>
+                                </Link>
+                            )}
+
+                            <Button
+                                variant="secondary"
+                                onClick={openProfileModal}
+                            >
+                                <FaUser /> {user?.nickname || "Профиль"}
+                            </Button>
+
+                            <button className={styles.mobileMenuBtn}>
+                                <FaBars />
+                            </button>
+
+                            <Button variant="secondary" onClick={logout}>
+                                <FaSignOutAlt /> Выход
+                            </Button>
+                        </>
+                    ) : (
+                        <Button variant="primary" onClick={openLoginModal}>
+                            Вход
+                        </Button>
+                    )}
                 </div>
             </div>
         </header>
