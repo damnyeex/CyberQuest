@@ -1,11 +1,11 @@
 "use client";
 import ProtectedRoute from "@/shared/lib/ProtectedRoute/ProtectedRoute";
-import CTFPage from "@/pages/CTFPage/CTFPage";
+import CTFDetailPage from "@/pages/CTFDetailPage/CTFDetailPage";
 
-export default function Page() {
+export default function Page({ params }) {
     return (
         <ProtectedRoute>
-            <CTFPage />
+            <CTFDetailPage slug={params.slug} />
         </ProtectedRoute>
     );
 }

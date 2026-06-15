@@ -3,30 +3,65 @@
 import React, { useState, useEffect } from "react";
 import * as styles from "./AdminComp.module.scss";
 import Button from "@/shared/UI/Button/Button";
-import { adminApi } from "@/shared/api";
+import { adminApi } from "@/shared/api/index";
 import { useApp } from "@/providers/AppProvider";
+import UsersTable from "@/features/Admin/Components/UsersTable";
+import ChallengesTable from "@/features/Admin/Components/ChallengesTable";
+import SimpleTable from "@/features/Admin/Components/SimpleTable";
 
 const AdminComp = () => {
     const { isAdmin, showNotification } = useApp();
+
+    const [activeTab, setActiveTab] = useState("users");
+    const [isLoading, setIsLoading] = useState(false);
+
     const [users, setUsers] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const [isLoading, setIsLoading] = useState(true);
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [xpDelta, setXpDelta] = useState(0);
+    const [editingRoles, setEditingRoles] = useState({});
+
+    const [challenges, setChallenges] = useState([]);
+    const [challengeTotalPages, setChallengeTotalPages] = useState(1);
+    const [challengePage, setChallengePage] = useState(1);
+
+    const [categories, setCategories] = useState([]);
+    const [difficulties, setDifficulties] = useState([]);
+    const [tags, setTags] = useState([]);
+
     const [logs, setLogs] = useState([]);
-    const [activeTab, setActiveTab] = useState("users");
 
     useEffect(() => {
-        if (isAdmin) fetchUsers(currentPage);
-    }, [currentPage, isAdmin]);
+        if (!isAdmin) return;
+        switch (activeTab) {
+            case "users":
+                fetchUsers(currentPage);
+                break;
+            case "challenges":
+                fetchChallenges(challengePage);
+                break;
+            case "categories":
+                fetchCategories();
+                break;
+            case "difficulties":
+                fetchDifficulties();
+                break;
+            case "tags":
+                fetchTags();
+                break;
+            case "logs":
+                fetchLogs();
+                break;
+        }
+    }, [activeTab, currentPage, challengePage]);
 
     const fetchUsers = async (page) => {
         setIsLoading(true);
         try {
-            const response = await adminApi.getUsers(page);
-            setUsers(response.data.users);
-            setTotalPages(response.data.pages);
+            const { data } = await adminApi.getUsers(page);
+            setUsers(data.users);
+            setTotalPages(data.pages);
         } catch (err) {
             showNotification("Ошибка загрузки пользователей", "error");
         } finally {
@@ -56,23 +91,106 @@ const AdminComp = () => {
         }
     };
 
-    const handleDeleteUser = async (userId) => {
-        if (!confirm("Вы уверены?")) return;
+    const handleRestoreUser = async (userId) => {
         try {
-            await adminApi.updateUser(userId, { delete: true });
-            showNotification("Пользователь удалён", "success");
+            await adminApi.restoreUser(userId);
+            showNotification("Пользователь восстановлен", "success");
             fetchUsers(currentPage);
         } catch (err) {
-            showNotification("Ошибка удаления", "error");
+            showNotification("Ошибка восстановления", "error");
+        }
+    };
+
+    const handleRoleChange = (userId, newRole) => {
+        setEditingRoles((prev) => ({ ...prev, [userId]: newRole }));
+    };
+
+    const saveRoles = async (userId) => {
+        const role = editingRoles[userId];
+        if (!role) return;
+        try {
+            await adminApi.updateUser(userId, { roles: [role] });
+            showNotification("Роль обновлена", "success");
+            setEditingRoles((prev) => {
+                const next = { ...prev };
+                delete next[userId];
+                return next;
+            });
+            fetchUsers(currentPage);
+        } catch (err) {
+            showNotification("Ошибка сохранения роли", "error");
+        }
+    };
+
+    const fetchChallenges = async (page) => {
+        setIsLoading(true);
+        try {
+            const { data } = await adminApi.getAllChallenges({ page });
+            setChallenges(data.challenges);
+            setChallengeTotalPages(data.pages);
+        } catch (err) {
+            showNotification("Ошибка загрузки задач", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const deleteChallenge = async (id) => {
+        if (!confirm("Удалить задачу навсегда?")) return;
+        try {
+            await adminApi.deleteChallenge(id);
+            showNotification("Задача удалена", "success");
+            fetchChallenges(challengePage);
+        } catch (err) {
+            showNotification("Ошибка удаления задачи", "error");
+        }
+    };
+
+    const fetchCategories = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await adminApi.getAllCategories();
+            setCategories(data);
+        } catch (err) {
+            showNotification("Ошибка загрузки категорий", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchDifficulties = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await adminApi.getAllDifficulties();
+            setDifficulties(data);
+        } catch (err) {
+            showNotification("Ошибка загрузки уровней", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchTags = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await adminApi.getAllTags();
+            setTags(data);
+        } catch (err) {
+            showNotification("Ошибка загрузки тегов", "error");
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const fetchLogs = async () => {
+        setIsLoading(true);
         try {
-            const response = await adminApi.getLogs();
-            setLogs(response.data.logs);
+            const { data } = await adminApi.getLogs();
+            setLogs(data.logs);
         } catch (err) {
             showNotification("Ошибка загрузки логов", "error");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -84,7 +202,6 @@ const AdminComp = () => {
             showNotification("Ошибка бэкапа", "error");
         }
     };
-
     if (!isAdmin) {
         return (
             <div className={styles.adminPage}>
@@ -102,232 +219,88 @@ const AdminComp = () => {
                 <h1>Админ-панель</h1>
 
                 <div className={styles.tabs}>
-                    <button
-                        className={`${styles.tab} ${activeTab === "users" ? styles.active : ""}`}
-                        onClick={() => setActiveTab("users")}
-                    >
-                        Пользователи
-                    </button>
-                    <button
-                        className={`${styles.tab} ${activeTab === "logs" ? styles.active : ""}`}
-                        onClick={() => {
-                            setActiveTab("logs");
-                            fetchLogs();
-                        }}
-                    >
-                        Логи
-                    </button>
+                    {[
+                        { key: "users", label: "Пользователи" },
+                        { key: "challenges", label: "Задачи" },
+                        { key: "categories", label: "Категории" },
+                        { key: "difficulties", label: "Уровни" },
+                        { key: "tags", label: "Теги" },
+                        { key: "logs", label: "Логи" },
+                    ].map((tab) => (
+                        <button
+                            key={tab.key}
+                            className={`${styles.tab} ${activeTab === tab.key ? styles.active : ""}`}
+                            onClick={() => {
+                                setActiveTab(tab.key);
+                                if (tab.key === "logs") fetchLogs();
+                            }}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
 
-                {activeTab === "users" && (
-                    <>
-                        <div className={styles.actions}>
-                            <Button variant="secondary" onClick={handleBackup}>
-                                Запустить бэкап
-                            </Button>
-                        </div>
+                <div className={styles.actions}>
+                    {activeTab === "users" && (
+                        <Button variant="secondary" onClick={handleBackup}>
+                            Бэкап
+                        </Button>
+                    )}
+                </div>
 
-                        {isLoading ? (
-                            <p>Загрузка...</p>
-                        ) : (
-                            <div className={styles.usersTable}>
-                                <table className={styles.table}>
-                                    <thead className={styles.tableHead}>
-                                        <tr>
-                                            <th className={styles.colId}>ID</th>
-                                            <th className={styles.colEmail}>
-                                                Email
-                                            </th>
-                                            <th className={styles.colNick}>
-                                                Ник
-                                            </th>
-                                            <th className={styles.colXp}>XP</th>
-                                            <th className={styles.colRoles}>
-                                                Роли
-                                            </th>
-                                            <th className={styles.colStatus}>
-                                                Активен
-                                            </th>
-                                            <th className={styles.colActions}>
-                                                Действия
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {users.map((user) => (
-                                            <React.Fragment key={user.id}>
-                                                <tr className={styles.tableRow}>
-                                                    <td
-                                                        className={styles.colId}
-                                                    >
-                                                        {user.id}
-                                                    </td>
-                                                    <td
-                                                        className={
-                                                            styles.colEmail
-                                                        }
-                                                    >
-                                                        {user.email}
-                                                    </td>
-                                                    <td
-                                                        className={
-                                                            styles.colNick
-                                                        }
-                                                    >
-                                                        {user.nickname}
-                                                    </td>
-                                                    <td
-                                                        className={styles.colXp}
-                                                    >
-                                                        {user.total_xp}
-                                                    </td>
-                                                    <td
-                                                        className={
-                                                            styles.colRoles
-                                                        }
-                                                    >
-                                                        {user.roles?.join(", ")}
-                                                    </td>
-                                                    <td
-                                                        className={
-                                                            styles.colStatus
-                                                        }
-                                                    >
-                                                        {user.is_active
-                                                            ? "Да"
-                                                            : "Нет"}
-                                                    </td>
-                                                    <td
-                                                        className={
-                                                            styles.colActions
-                                                        }
-                                                    >
-                                                        <div
-                                                            className={
-                                                                styles.rowActions
-                                                            }
-                                                        >
-                                                            <Button
-                                                                variant="secondary"
-                                                                onClick={() =>
-                                                                    setSelectedUserId(
-                                                                        selectedUserId ===
-                                                                            user.id
-                                                                            ? null
-                                                                            : user.id,
-                                                                    )
-                                                                }
-                                                            >
-                                                                XP
-                                                            </Button>
-                                                            <Button
-                                                                variant="secondary"
-                                                                onClick={() =>
-                                                                    handleUpdateUser(
-                                                                        user.id,
-                                                                        {
-                                                                            is_active:
-                                                                                !user.is_active,
-                                                                        },
-                                                                    )
-                                                                }
-                                                            >
-                                                                {user.is_active
-                                                                    ? "Блок"
-                                                                    : "Разблок"}
-                                                            </Button>
-                                                            <Button
-                                                                variant="secondary"
-                                                                onClick={() =>
-                                                                    handleDeleteUser(
-                                                                        user.id,
-                                                                    )
-                                                                }
-                                                            >
-                                                                Удалить
-                                                            </Button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                {isLoading && <p className={styles.loading}>Загрузка...</p>}
 
-                                                {/* Модалка изменения XP (появляется под строкой) */}
-                                                {selectedUserId === user.id && (
-                                                    <tr key={`xp-${user.id}`}>
-                                                        <td
-                                                            colSpan={7}
-                                                            style={{
-                                                                padding: 0,
-                                                            }}
-                                                        >
-                                                            <div
-                                                                className={
-                                                                    styles.xpModal
-                                                                }
-                                                            >
-                                                                <input
-                                                                    type="number"
-                                                                    value={
-                                                                        xpDelta
-                                                                    }
-                                                                    onChange={(
-                                                                        e,
-                                                                    ) =>
-                                                                        setXpDelta(
-                                                                            Number(
-                                                                                e
-                                                                                    .target
-                                                                                    .value,
-                                                                            ),
-                                                                        )
-                                                                    }
-                                                                    placeholder="+/- XP"
-                                                                />
-                                                                <Button
-                                                                    variant="primary"
-                                                                    onClick={() =>
-                                                                        handleAdjustXp(
-                                                                            user.id,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Применить
-                                                                </Button>
-                                                                <Button
-                                                                    variant="secondary"
-                                                                    onClick={() =>
-                                                                        setSelectedUserId(
-                                                                            null,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Отмена
-                                                                </Button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-
-                        <div className={styles.pagination}>
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i}
-                                    className={`${styles.pageBtn} ${currentPage === i + 1 ? styles.active : ""}`}
-                                    onClick={() => setCurrentPage(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
-                        </div>
-                    </>
+                {!isLoading && activeTab === "users" && (
+                    <UsersTable
+                        users={users}
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        selectedUserId={selectedUserId}
+                        setSelectedUserId={setSelectedUserId}
+                        xpDelta={xpDelta}
+                        setXpDelta={setXpDelta}
+                        editingRoles={editingRoles}
+                        handleUpdateUser={handleUpdateUser}
+                        handleAdjustXp={handleAdjustXp}
+                        handleRestoreUser={handleRestoreUser}
+                        handleRoleChange={handleRoleChange}
+                        saveRoles={saveRoles}
+                    />
                 )}
 
-                {activeTab === "logs" && (
+                {!isLoading && activeTab === "challenges" && (
+                    <ChallengesTable
+                        challenges={challenges}
+                        totalPages={challengeTotalPages}
+                        currentPage={challengePage}
+                        setCurrentPage={setChallengePage}
+                        deleteChallenge={deleteChallenge}
+                    />
+                )}
+
+                {!isLoading && activeTab === "categories" && (
+                    <SimpleTable
+                        data={categories}
+                        columns={["id", "name", "display_name", "color_hex"]}
+                    />
+                )}
+
+                {!isLoading && activeTab === "difficulties" && (
+                    <SimpleTable
+                        data={difficulties}
+                        columns={["id", "name", "display_name", "xp_reward"]}
+                    />
+                )}
+
+                {!isLoading && activeTab === "tags" && (
+                    <SimpleTable
+                        data={tags}
+                        columns={["id", "name", "color_hex"]}
+                    />
+                )}
+
+                {!isLoading && activeTab === "logs" && (
                     <div className={styles.logs}>
                         {logs.map((log, i) => (
                             <div key={i} className={styles.logItem}>
