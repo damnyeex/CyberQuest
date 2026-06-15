@@ -64,8 +64,10 @@ const CourseIntroPage = ({ courseId }) => {
 
     return (
         <div className={`container ${styles.courseIntro}`}>
-            <Link href="/courses" className={styles.backLink}>
-                ← Назад к курсам
+            <Link href="/courses" style={{ width: "25%" }}>
+                <Button variant="primary" mb15>
+                    ← Назад к курсам
+                </Button>
             </Link>
             <h1>Введение в кибербезопасность</h1>
             <p className={styles.description}>Базовый курс для новичков...</p>
