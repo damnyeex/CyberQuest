@@ -4,7 +4,7 @@ import string
 from datetime import datetime, timedelta
 
 from flask import Blueprint, request, jsonify
-from models import (db, User, Role, Category, DifficultyLevel, Challenge,
+from models import (db, Course, User, Role, Category, DifficultyLevel, Challenge,
                     ChallengeTag, ChallengeSolve, UserProgress, UserCategoryProgress)
 from auth import (google_auth, telegram_auth, generate_reset_token,
                   verify_reset_token, token_required, admin_required, create_token)
@@ -33,8 +33,10 @@ def challenge_to_dict(challenge, include_flag=False):
         'title': challenge.title,
         'slug': challenge.slug,
         'description': challenge.description,
+        'category_id': challenge.category_id,          # ← добавили
         'category': challenge.category.name,
         'category_display': challenge.category.display_name,
+        'difficulty_id': challenge.difficulty_id,      # ← добавили
         'difficulty': challenge.difficulty.name,
         'difficulty_display': challenge.difficulty.display_name,
         'base_xp': challenge.base_xp,
@@ -106,7 +108,7 @@ def get_challenges():
     status = request.args.get('status', 'published')
 
     query = Challenge.query
-    if status:
+    if status and status != 'all':
         query = query.filter(Challenge.status == status)
     if category:
         query = query.join(Category).filter(Category.name == category)
@@ -146,6 +148,47 @@ def get_user_progress(user_id):
     if data is None:
         return jsonify({'error': 'User not found'}), 404
     return jsonify(data)
+
+def course_to_dict(course, include_challenges=False):
+    result = {
+        'id': course.id,
+        'title': course.title,
+        'slug': course.slug,
+        'description': course.description,
+        'difficulty': course.difficulty.name if course.difficulty else 'beginner',
+        'difficulty_display': course.difficulty.display_name if course.difficulty else 'Beginner',
+        'icon': course.icon,
+        'challenges_count': len(course.challenges),
+        'category': course.category.name if course.category else None,
+        'category_display': course.category.display_name if course.category else None,
+    }
+    if include_challenges:
+        result['challenges'] = [challenge_to_dict(c) for c in course.challenges]
+    return result
+
+@api_bp.route('/courses', methods=['GET'])
+def get_courses():
+    courses = Course.query.filter_by(is_published=True).order_by(Course.id).all()
+    return jsonify([course_to_dict(c) for c in courses])
+
+@api_bp.route('/courses/<slug>', methods=['GET'])
+def get_course(slug):
+    course = Course.query.filter_by(slug=slug, is_published=True).first_or_404()
+    return jsonify(course_to_dict(course, include_challenges=True))
+
+@api_bp.route('/courses/<slug>/progress', methods=['GET'])
+@token_required
+def get_course_progress(current_user, slug):
+    course = Course.query.filter_by(slug=slug, is_published=True).first_or_404()
+    solved_ids = [s.challenge_id for s in current_user.solves]
+    course_challenge_ids = [c.id for c in course.challenges]
+    solved_in_course = set(solved_ids) & set(course_challenge_ids)
+    progress_percent = round((len(solved_in_course) / len(course_challenge_ids)) * 100) if course_challenge_ids else 0
+    return jsonify({
+        'total_tasks': len(course_challenge_ids),
+        'solved_tasks': len(solved_in_course),
+        'progress_percent': progress_percent
+    })
 
 # ---------- Аутентификация и профиль ----------
 @api_bp.route('/auth/register', methods=['POST'])
@@ -272,6 +315,13 @@ def reset_password():
 def get_me(current_user):
     return jsonify(user_to_dict(current_user))
 
+@api_bp.route('/me/solves', methods=['GET'])
+@token_required
+def get_my_solves(current_user):
+    solves = ChallengeSolve.query.filter_by(user_id=current_user.id).all()
+    solved_ids = [s.challenge_id for s in solves]
+    return jsonify({'solved_challenge_ids': solved_ids})
+
 @api_bp.route('/me', methods=['PUT'])
 @token_required
 def update_profile(current_user):
@@ -318,6 +368,9 @@ def submit_flag(current_user, slug):
     solve = ChallengeSolve(user_id=current_user.id, challenge_id=challenge.id, xp_earned=xp_earned)
     db.session.add(solve)
     challenge.solve_count += 1
+
+    # Обновляем общий XP пользователя
+    current_user.total_xp = (current_user.total_xp or 0) + xp_earned
 
     progress = UserProgress.query.get(current_user.id)
     if not progress:
@@ -567,12 +620,28 @@ def teacher_view_student_progress(current_user, student_id):
 @admin_required
 def admin_list_users(current_user):
     page = request.args.get('page', 1, type=int)
-    per_page = 20
-    users = User.query.filter(User.deleted_at == None).paginate(page=page, per_page=per_page)
+    per_page = request.args.get('per_page', 20, type=int)
+    search = request.args.get('search', '')
+    role_filter = request.args.get('role', '')
+    show_deleted = request.args.get('show_deleted', '0')
+
+    query = User.query
+    if show_deleted != '1':
+        query = query.filter(User.deleted_at == None)
+    if search:
+        query = query.filter(
+            db.or_(User.email.ilike(f'%{search}%'), User.nickname.ilike(f'%{search}%'))
+        )
+    if role_filter:
+        query = query.filter(User.roles.any(Role.name == role_filter))
+
+    query = query.order_by(User.id.asc())
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     return jsonify({
-        'users': [user_to_dict(u) for u in users.items],
-        'total': users.total,
-        'pages': users.pages
+        'users': [user_to_dict(u) for u in pagination.items],
+        'total': pagination.total,
+        'pages': pagination.pages,
+        'current_page': page
     })
 
 @api_bp.route('/admin/users/<int:user_id>', methods=['PUT'])
@@ -580,18 +649,24 @@ def admin_list_users(current_user):
 def admin_update_user(current_user, user_id):
     user = User.query.get_or_404(user_id)
     data = request.get_json()
+
     if 'roles' in data:
         user.roles = []
         for r_name in data['roles']:
             role = Role.query.filter_by(name=r_name).first()
             if role:
                 user.roles.append(role)
-    if 'is_active' in data:
-        user.is_active = data['is_active']
-    if 'is_verified' in data:
-        user.is_verified = data['is_verified']
-    if 'delete' in data and data['delete']:
+
+    for field in ['email', 'nickname', 'first_name', 'last_name', 'is_active', 'is_verified']:
+        if field in data:
+            setattr(user, field, data[field])
+
+    if data.get('delete') is True:
         user.deleted_at = datetime.utcnow()
+    elif data.get('restore') is True:
+        user.deleted_at = None
+        user.is_active = True
+
     db.session.commit()
     return jsonify(user_to_dict(user))
 
@@ -600,12 +675,161 @@ def admin_update_user(current_user, user_id):
 def admin_adjust_xp(current_user, user_id):
     delta = request.get_json().get('delta', 0)
     user = User.query.get_or_404(user_id)
-    user.total_xp += delta
+    user.total_xp = max(0, user.total_xp + delta)
     progress = UserProgress.query.get(user_id)
     if progress:
         progress.total_xp = user.total_xp
     db.session.commit()
     return jsonify({'new_xp': user.total_xp})
+
+@api_bp.route('/admin/categories', methods=['POST'])
+@admin_required
+def admin_create_category(current_user):
+    data = request.get_json()
+    cat = Category(
+        name=data['name'],
+        display_name=data.get('display_name', data['name']),
+        color_hex=data.get('color_hex', '#000000'),
+        display_order=data.get('display_order', 0),
+        is_active=data.get('is_active', True)
+    )
+    db.session.add(cat)
+    db.session.commit()
+    return jsonify({'id': cat.id, 'name': cat.name}), 201
+
+@api_bp.route('/admin/categories/<int:category_id>', methods=['PUT'])
+@admin_required
+def admin_update_category(current_user, category_id):
+    cat = Category.query.get_or_404(category_id)
+    data = request.get_json()
+    for field in ['name', 'display_name', 'color_hex', 'display_order', 'is_active']:
+        if field in data:
+            setattr(cat, field, data[field])
+    db.session.commit()
+    return jsonify({'id': cat.id, 'name': cat.name})
+
+@api_bp.route('/admin/categories/<int:category_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_category(current_user, category_id):
+    cat = Category.query.get_or_404(category_id)
+    db.session.delete(cat)
+    db.session.commit()
+    return jsonify({'message': 'Category deleted'})
+
+@api_bp.route('/admin/difficulties', methods=['POST'])
+@admin_required
+def admin_create_difficulty(current_user):
+    data = request.get_json()
+    diff = DifficultyLevel(
+        name=data['name'],
+        display_name=data.get('display_name', data['name']),
+        xp_reward=data.get('xp_reward', 0),
+        display_order=data.get('display_order', 0)
+    )
+    db.session.add(diff)
+    db.session.commit()
+    return jsonify({'id': diff.id, 'name': diff.name}), 201
+
+@api_bp.route('/admin/difficulties/<int:diff_id>', methods=['PUT'])
+@admin_required
+def admin_update_difficulty(current_user, diff_id):
+    diff = DifficultyLevel.query.get_or_404(diff_id)
+    data = request.get_json()
+    for field in ['name', 'display_name', 'xp_reward', 'display_order']:
+        if field in data:
+            setattr(diff, field, data[field])
+    db.session.commit()
+    return jsonify({'id': diff.id, 'name': diff.name})
+
+@api_bp.route('/admin/difficulties/<int:diff_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_difficulty(current_user, diff_id):
+    diff = DifficultyLevel.query.get_or_404(diff_id)
+    db.session.delete(diff)
+    db.session.commit()
+    return jsonify({'message': 'Difficulty deleted'})
+
+@api_bp.route('/admin/tags', methods=['POST'])
+@admin_required
+def admin_create_tag(current_user):
+    data = request.get_json()
+    tag = ChallengeTag(
+        name=data['name'],
+        color_hex=data.get('color_hex', '#000000')
+    )
+    db.session.add(tag)
+    db.session.commit()
+    return jsonify({'id': tag.id, 'name': tag.name}), 201
+
+@api_bp.route('/admin/tags/<int:tag_id>', methods=['PUT'])
+@admin_required
+def admin_update_tag(current_user, tag_id):
+    tag = ChallengeTag.query.get_or_404(tag_id)
+    data = request.get_json()
+    for field in ['name', 'color_hex']:
+        if field in data:
+            setattr(tag, field, data[field])
+    db.session.commit()
+    return jsonify({'id': tag.id, 'name': tag.name})
+
+@api_bp.route('/admin/tags/<int:tag_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_tag(current_user, tag_id):
+    tag = ChallengeTag.query.get_or_404(tag_id)
+    db.session.delete(tag)
+    db.session.commit()
+    return jsonify({'message': 'Tag deleted'})
+
+@api_bp.route('/admin/challenges', methods=['POST'])
+@admin_required
+def admin_create_challenge(current_user):
+    data = request.get_json()
+    required = ['title', 'slug', 'description', 'category_id', 'difficulty_id', 'flag']
+    for field in required:
+        if field not in data:
+            return jsonify({'error': f'{field} is required'}), 400
+    challenge = Challenge(
+        title=data['title'],
+        slug=data['slug'],
+        description=data['description'],
+        category_id=data['category_id'],
+        difficulty_id=data['difficulty_id'],
+        base_xp=data.get('base_xp', 100),
+        author_id=current_user.id,
+        status=data.get('status', 'draft'),
+        hints=data.get('hints', []),
+        attachments=data.get('attachments', []),
+        flag_format=data.get('flag_format', 'CyberQuest{%s}')
+    )
+    challenge.set_flag(data['flag'])
+    if 'tags' in data:
+        for tag_name in data['tags']:
+            tag = ChallengeTag.query.filter_by(name=tag_name).first()
+            if tag:
+                challenge.tags.append(tag)
+    db.session.add(challenge)
+    db.session.commit()
+    return jsonify(challenge_to_dict(challenge, include_flag=True)), 201
+
+@api_bp.route('/admin/challenges/<int:challenge_id>', methods=['PUT'])
+@admin_required
+def admin_update_challenge(current_user, challenge_id):
+    challenge = Challenge.query.get_or_404(challenge_id)
+    data = request.get_json()
+    for field in ['title', 'slug', 'description', 'category_id', 'difficulty_id',
+                  'base_xp', 'status', 'hints', 'attachments', 'flag_format']:
+        if field in data:
+            setattr(challenge, field, data[field])
+    if 'flag' in data:
+        challenge.set_flag(data['flag'])
+    if 'tags' in data:
+        challenge.tags = []
+        for tag_name in data['tags']:
+            tag = ChallengeTag.query.filter_by(name=tag_name).first()
+            if tag:
+                challenge.tags.append(tag)
+    db.session.commit()
+    return jsonify(challenge_to_dict(challenge, include_flag=True))
 
 @api_bp.route('/admin/challenges/<int:challenge_id>', methods=['DELETE'])
 @admin_required
@@ -614,6 +838,85 @@ def admin_delete_challenge(current_user, challenge_id):
     db.session.delete(challenge)
     db.session.commit()
     return jsonify({'message': 'Deleted'})
+
+@api_bp.route('/admin/users/<int:user_id>/progress', methods=['GET'])
+@admin_required
+def admin_get_user_progress(current_user, user_id):
+    data = get_user_progress_data(user_id)
+    if data is None:
+        return jsonify({'error': 'User not found'}), 404
+    return jsonify(data)
+
+@api_bp.route('/admin/tariffs', methods=['PUT'])
+@admin_required
+def admin_update_tariffs(current_user):
+    data = request.get_json()
+    return jsonify({'message': 'Tariffs updated', 'data': data})
+
+@api_bp.route('/admin/import', methods=['POST'])
+@admin_required
+def admin_import_data(current_user):
+    file = request.files.get('file')
+    if not file:
+        return jsonify({'error': 'No file provided'}), 400
+    return jsonify({'message': f'Imported from {file.filename}'})
+
+@api_bp.route('/admin/export', methods=['GET'])
+@admin_required
+def admin_export_data(current_user):
+    entity = request.args.get('entity', 'users')  # users / challenges
+    output = "id,email,nickname\n1,test@test.com,test"
+    from flask import make_response
+    response = make_response(output)
+    response.headers['Content-Disposition'] = f'attachment; filename={entity}.csv'
+    response.headers['Content-Type'] = 'text/csv'
+    return response
+
+@api_bp.route('/admin/courses', methods=['POST'])
+@admin_required
+def admin_create_course(current_user):
+    data = request.get_json()
+    course = Course(
+        title=data['title'],
+        slug=data['slug'],
+        description=data.get('description', ''),
+        difficulty_id=data.get('difficulty_id'),
+        icon=data.get('icon', 'FaCode'),
+        is_published=data.get('is_published', True)
+    )
+    db.session.add(course)
+    db.session.commit()
+    return jsonify(course_to_dict(course)), 201
+
+@api_bp.route('/admin/courses/<int:course_id>', methods=['PUT'])
+@admin_required
+def admin_update_course(current_user, course_id):
+    course = Course.query.get_or_404(course_id)
+    data = request.get_json()
+    for field in ['title', 'slug', 'description', 'difficulty_id', 'icon', 'is_published']:
+        if field in data:
+            setattr(course, field, data[field])
+    db.session.commit()
+    return jsonify(course_to_dict(course))
+
+@api_bp.route('/admin/courses/<int:course_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_course(current_user, course_id):
+    course = Course.query.get_or_404(course_id)
+    db.session.delete(course)
+    db.session.commit()
+    return jsonify({'message': 'Course deleted'})
+
+@api_bp.route('/admin/courses/<int:course_id>/challenges', methods=['POST'])
+@admin_required
+def admin_add_challenge_to_course(current_user, course_id):
+    course = Course.query.get_or_404(course_id)
+    data = request.get_json()
+    challenge_id = data.get('challenge_id')
+    challenge = Challenge.query.get_or_404(challenge_id)
+    challenge.course_id = course.id
+    db.session.commit()
+    return jsonify({'message': 'Challenge added to course'})
 
 @api_bp.route('/admin/logs', methods=['GET'])
 @admin_required

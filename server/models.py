@@ -42,7 +42,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     # Работа с JSON-биографией для хранения доп.данных
     def get_meta(self):
         try:
@@ -136,6 +136,9 @@ class Challenge(db.Model):
     status = db.Column(db.String(20), default='draft')  # draft, published, archived
     solve_count = db.Column(db.Integer, default=0)
     attempt_count = db.Column(db.Integer, default=0)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=True)
+
+    course = db.relationship('Course', back_populates='challenges')
 
     category = db.relationship('Category', back_populates='challenges')
     difficulty = db.relationship('DifficultyLevel', back_populates='challenges')
@@ -198,3 +201,19 @@ class UserCategoryProgress(db.Model):
     category = db.relationship('Category', back_populates='category_progress')
 
     __table_args__ = (UniqueConstraint('user_id', 'category_id'),)
+
+
+class Course(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    slug = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    description = db.Column(db.Text)
+    difficulty_id = db.Column(db.Integer, db.ForeignKey('difficulty_levels.id'))
+    icon = db.Column(db.String(100), default='FaCode')  # название иконки для фронта
+    is_published = db.Column(db.Boolean, default=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
+
+    category = db.relationship('Category')
+    difficulty = db.relationship('DifficultyLevel')
+    challenges = db.relationship('Challenge', back_populates='course')
