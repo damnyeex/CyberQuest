@@ -88,10 +88,24 @@
         background-color: rgba($warning, 0.2);
         color: $warning;
     }
-    &.difficulty-advanced {
+    &.difficulty-expert {
         background-color: rgba($danger, 0.2);
         color: $danger;
     }
+}
+
+.filterGroup {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filterLabel {
+    font-weight: 500;
+    color: $text-secondary;
+    margin-right: 10px;
 }
 
 .courseContent {

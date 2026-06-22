@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import * as styles from "./ProfileModal.module.scss";
 import Modal from "@/shared/UI/Modal/Modal";
 import Button from "@/shared/UI/Button/Button";
-import { userApi } from "@/shared/api/index";
 import { useApp } from "@/providers/AppProvider";
 import {
     FaUser,
@@ -15,27 +14,7 @@ import {
 } from "react-icons/fa";
 
 const ProfileModal = ({ isOpen, onClose }) => {
-    const { user, showNotification } = useApp();
-    const [profile, setProfile] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        if (isOpen && user) {
-            fetchProfile();
-        }
-    }, [isOpen, user]);
-
-    const fetchProfile = async () => {
-        setIsLoading(true);
-        try {
-            const response = await userApi.getMe();
-            setProfile(response.data);
-        } catch (err) {
-            showNotification("Ошибка загрузки профиля", "error");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const { user } = useApp();
 
     if (!user) return null;
 
@@ -46,69 +25,60 @@ const ProfileModal = ({ isOpen, onClose }) => {
             title="Профиль"
             maxWidth="500px"
         >
-            {isLoading ? (
-                <p className={styles.loading}>Загрузка...</p>
-            ) : profile ? (
-                <div className={styles.profile}>
-                    <div className={styles.avatar}>
-                        {profile.avatar_url ? (
-                            <img
-                                src={profile.avatar_url}
-                                alt={profile.nickname}
-                            />
-                        ) : (
-                            <div className={styles.avatarPlaceholder}>
-                                <FaUser />
-                            </div>
-                        )}
+            <div className={styles.profile}>
+                <div className={styles.avatar}>
+                    {user.avatar_url ? (
+                        <img src={user.avatar_url} alt={user.nickname} />
+                    ) : (
+                        <div className={styles.avatarPlaceholder}>
+                            <FaUser />
+                        </div>
+                    )}
+                </div>
+
+                <h2 className={styles.nickname}>{user.nickname}</h2>
+
+                <div className={styles.info}>
+                    <div className={styles.infoRow}>
+                        <FaEnvelope />
+                        <span>{user.email}</span>
                     </div>
-
-                    <h2 className={styles.nickname}>{profile.nickname}</h2>
-
-                    <div className={styles.info}>
+                    {user.first_name && user.last_name && (
                         <div className={styles.infoRow}>
-                            <FaEnvelope />
-                            <span>{profile.email}</span>
-                        </div>
-                        {profile.first_name && profile.last_name && (
-                            <div className={styles.infoRow}>
-                                <FaUser />
-                                <span>
-                                    {profile.first_name} {profile.last_name}
-                                </span>
-                            </div>
-                        )}
-                        <div className={styles.infoRow}>
-                            <FaTrophy />
-                            <span>{profile.total_xp} XP</span>
-                        </div>
-                        <div className={styles.infoRow}>
-                            <FaShieldAlt />
-                            <div className={styles.roles}>
-                                {profile.roles?.map((role) => (
-                                    <span key={role} className={styles.role}>
-                                        {role}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                        <div className={styles.infoRow}>
-                            <FaCheckCircle />
+                            <FaUser />
                             <span>
-                                {profile.is_verified
-                                    ? "Верифицирован"
-                                    : "Не верифицирован"}
+                                {user.first_name} {user.last_name}
                             </span>
                         </div>
+                    )}
+                    <div className={styles.infoRow}>
+                        <FaTrophy />
+                        <span>{user.total_xp} XP</span>
                     </div>
-
-                    <Button variant="secondary" fullWidth onClick={onClose}>
-                        Закрыть
-                    </Button>
+                    <div className={styles.infoRow}>
+                        <FaShieldAlt />
+                        <div className={styles.roles}>
+                            {user.roles?.map((role) => (
+                                <span key={role} className={styles.role}>
+                                    {role}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className={styles.infoRow}>
+                        <FaCheckCircle />
+                        <span>
+                            {user.is_verified
+                                ? "Верифицирован"
+                                : "Не верифицирован"}
+                        </span>
+                    </div>
                 </div>
-            ) : (
-                <p>Не удалось загрузить профиль</p>
-            )}
+
+                <Button variant="secondary" fullWidth onClick={onClose}>
+                    Закрыть
+                </Button>
+            </div>
         </Modal>
     );
 };

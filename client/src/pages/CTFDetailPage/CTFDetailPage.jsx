@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import * as styles from "./CTFDetailPage.module.scss";
 import Button from "@/shared/UI/Button/Button";
 import { useApp } from "@/providers/AppProvider";
+import { challengesApi } from "@/shared/api/index";
+import { DIFFICULTY_LABELS } from "@/pages/CTFPage/CTFPage";
 import {
     FaChevronDown,
     FaChevronUp,
@@ -13,46 +15,121 @@ import {
     FaStop,
     FaExternalLinkAlt,
     FaQuestionCircle,
+    FaCheckCircle,
 } from "react-icons/fa";
 
 const CTFDetailPage = ({ slug }) => {
-    const { showNotification } = useApp();
-    const [hintVisible, setHintVisible] = useState(false);
+    const { showNotification, refreshUser, isAuthenticated } = useApp();
+    const [task, setTask] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [hintVisible, setHintVisible] = useState({});
     const [flagInput, setFlagInput] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [isSolved, setIsSolved] = useState(false);
+    const [solvedXp, setSolvedXp] = useState(0);
 
-    const toggleHint = () => {
-        setHintVisible(!hintVisible);
-        if (!hintVisible) {
-            showNotification("Подсказка открыта (-50 очков)", "info");
-        }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                const { data: taskData } = await challengesApi.getBySlug(slug);
+                setTask(taskData);
+
+                if (isAuthenticated) {
+                    const { data: solvesData } =
+                        await challengesApi.getMySolvedIds();
+                    if (solvesData.solved_challenge_ids.includes(taskData.id)) {
+                        setIsSolved(true);
+                        setSolvedXp(taskData.base_xp);
+                    }
+                }
+            } catch (err) {
+                setError("Задача не найдена");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, [slug, isAuthenticated]);
+
+    const toggleHint = (index) => {
+        setHintVisible((prev) => ({
+            ...prev,
+            [index]: !prev[index],
+        }));
     };
 
-    const submitFlag = () => {
+    const submitFlag = async () => {
         if (!flagInput.trim()) {
-            showNotification("Введите флаг для отправки", "error");
+            showNotification("Введите флаг", "error");
             return;
         }
-        if (flagInput.startsWith("CyberQuest{") && flagInput.endsWith("}")) {
-            showNotification("Флаг принят! +300 очков опыта", "success");
-            setFlagInput("");
-        } else {
-            showNotification("Неверный формат флага", "error");
+        setSubmitting(true);
+        try {
+            const { data } = await challengesApi.submitFlag(
+                slug,
+                flagInput.trim(),
+            );
+            if (data.correct) {
+                showNotification(
+                    `Флаг принят! +${data.xp_earned} XP`,
+                    "success",
+                );
+                setIsSolved(true);
+                setSolvedXp(data.xp_earned);
+                setFlagInput("");
+                await refreshUser();
+            } else {
+                showNotification(data.message || "Неверный флаг", "error");
+            }
+        } catch (err) {
+            const msg = err.response?.data?.error || "Ошибка проверки флага";
+            showNotification(msg, "error");
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    // Здесь позже можно подтянуть данные по slug из API
+    if (isLoading) {
+        return (
+            <section className={styles.ctfTrainer}>
+                <div
+                    className="container"
+                    style={{ textAlign: "center", padding: "80px 0" }}
+                >
+                    <p></p>
+                </div>
+            </section>
+        );
+    }
+
+    if (error || !task) {
+        return (
+            <section className={styles.ctfTrainer}>
+                <div
+                    className="container"
+                    style={{ textAlign: "center", padding: "80px 0" }}
+                >
+                    <p>{error || "Задача не найдена"}</p>
+                    <Link href="/ctf">
+                        <Button variant="primary">← Назад к задачам</Button>
+                    </Link>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className={styles.ctfTrainer}>
             <div className="container">
                 <Link href="/ctf" style={{ width: "25%" }}>
-                    <Button variant="primary" mb15>
-                        ← Назад к задачам
-                    </Button>
+                    <Button variant="primary">← Назад к задачам</Button>
                 </Link>
                 <div className={styles.sectionHeader}>
                     <div>
                         <h2>CTF Тренажер</h2>
-                        <p>Практическая задача: Обход аутентификации</p>
+                        <p>{task.title}</p>
                     </div>
                     <Button variant="secondary">
                         <FaQuestionCircle /> Помощь
@@ -62,70 +139,59 @@ const CTFDetailPage = ({ slug }) => {
                 <div className={styles.ctfContainer}>
                     <div className={styles.taskMain}>
                         <div className={styles.taskHeader}>
-                            <h3>Задание #CTF-07: Уязвимость сессий</h3>
+                            <h3>{task.title}</h3>
                             <div className={styles.taskMeta}>
                                 <span className={styles.taskTag}>
-                                    Веб-безопасность
+                                    {task.category_display || task.category}
                                 </span>
                                 <span className={styles.taskTag}>
-                                    Средняя сложность
+                                    {DIFFICULTY_LABELS[task.difficulty] ||
+                                        task.difficulty}
                                 </span>
                                 <span className={styles.taskTag}>
-                                    300 очков
+                                    {task.base_xp} очков
                                 </span>
                             </div>
                         </div>
 
                         <div className={styles.taskDescription}>
                             <h3>Описание задачи</h3>
-                            <p>
-                                Вам предоставлен доступ к тестовому
-                                веб-приложению с уязвимой системой
-                                аутентификации. Найдите способ обойти проверку
-                                подлинности и получить доступ к административной
-                                панели.
-                            </p>
+                            <p>{task.description}</p>
                             <p>
                                 Цель: получить флаг в формате{" "}
-                                <code>CyberQuest{"{...}"}</code> из защищенной
-                                области приложения.
-                            </p>
-                            <h3>Дополнительная информация</h3>
-                            <p>
-                                Приложение использует cookies для управления
-                                сессиями. Обратите внимание на параметры cookies
-                                и их значения. Административная панель доступна
-                                по адресу <code>/admin.php</code>.
+                                <code>CyberQuest{"{...}"}</code>.
                             </p>
                         </div>
 
-                        <div className={styles.hintSection}>
-                            <div
-                                className={styles.hintHeader}
-                                onClick={toggleHint}
-                            >
-                                <h3>
-                                    <FaLightbulb /> Подсказка #1 (стоимость: 50
-                                    очков)
-                                </h3>
-                                {hintVisible ? (
-                                    <FaChevronUp />
-                                ) : (
-                                    <FaChevronDown />
-                                )}
+                        {task.hints?.length > 0 && (
+                            <div className={styles.hintSection}>
+                                {task.hints.map((hint, idx) => (
+                                    <div key={idx}>
+                                        <div
+                                            className={styles.hintHeader}
+                                            onClick={() => toggleHint(idx)}
+                                        >
+                                            <h3>
+                                                <FaLightbulb /> Подсказка #
+                                                {idx + 1}
+                                                {hint.cost > 0 &&
+                                                    ` (${hint.cost} очков)`}
+                                            </h3>
+                                            {hintVisible[idx] ? (
+                                                <FaChevronUp />
+                                            ) : (
+                                                <FaChevronDown />
+                                            )}
+                                        </div>
+                                        {hintVisible[idx] && (
+                                            <div className={styles.hintContent}>
+                                                <p>{hint.text}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                            {hintVisible && (
-                                <div className={styles.hintContent}>
-                                    <p>
-                                        Изучите cookies, установленные
-                                        приложением после входа. Обратите
-                                        внимание на cookie с именем{" "}
-                                        <code>user_role</code>. Какие значения
-                                        он может принимать?
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                        )}
 
                         <div className={styles.flagInputSection}>
                             <h3>Отправить флаг</h3>
@@ -137,9 +203,14 @@ const CTFDetailPage = ({ slug }) => {
                                     onChange={(e) =>
                                         setFlagInput(e.target.value)
                                     }
+                                    disabled={submitting}
                                 />
-                                <Button variant="primary" onClick={submitFlag}>
-                                    Отправить
+                                <Button
+                                    variant="primary"
+                                    onClick={submitFlag}
+                                    disabled={submitting}
+                                >
+                                    {submitting ? "Отправка..." : "Отправить"}
                                 </Button>
                             </div>
                             <p>У вас есть неограниченное количество попыток</p>
@@ -175,7 +246,7 @@ const CTFDetailPage = ({ slug }) => {
                             <h3>Доступ к среде</h3>
                             <p>
                                 Для доступа к тестовому приложению используйте
-                                следующие данные:
+                                данные:
                             </p>
                             <div className={styles.credentials}>
                                 <p>
@@ -201,15 +272,15 @@ const CTFDetailPage = ({ slug }) => {
                             <div className={styles.stats}>
                                 <div>
                                     <span>Решили задачу:</span>{" "}
-                                    <span>42% участников</span>
+                                    <span>{task.solve_count} участников</span>
                                 </div>
                                 <div>
-                                    <span>Среднее время:</span>{" "}
-                                    <span>48 минут</span>
+                                    <span>Всего попыток:</span>{" "}
+                                    <span>{task.attempt_count}</span>
                                 </div>
                                 <div>
-                                    <span>Подсказки использовали:</span>{" "}
-                                    <span>67%</span>
+                                    <span>Подсказок:</span>{" "}
+                                    <span>{task.hints?.length || 0}</span>
                                 </div>
                             </div>
                         </div>

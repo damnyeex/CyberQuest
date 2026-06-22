@@ -6,8 +6,10 @@ import Button from "@/shared/UI/Button/Button";
 import { adminApi } from "@/shared/api/index";
 import { useApp } from "@/providers/AppProvider";
 import UsersTable from "@/features/Admin/Components/UsersTable";
-import ChallengesTable from "@/features/Admin/Components/ChallengesTable";
-import SimpleTable from "@/features/Admin/Components/SimpleTable";
+import ChallengesTab from "@/features/Admin/Components/ChallengesTab";
+import CategoriesTab from "@/features/Admin/Components/CategoriesTab";
+import DifficultiesTab from "@/features/Admin/Components/DifficultiesTab";
+import TagsTab from "@/features/Admin/Components/TagsTab";
 
 const AdminComp = () => {
     const { isAdmin, showNotification } = useApp();
@@ -15,6 +17,7 @@ const AdminComp = () => {
     const [activeTab, setActiveTab] = useState("users");
     const [isLoading, setIsLoading] = useState(false);
 
+    // Пользователи
     const [users, setUsers] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -22,14 +25,17 @@ const AdminComp = () => {
     const [xpDelta, setXpDelta] = useState(0);
     const [editingRoles, setEditingRoles] = useState({});
 
+    // Задачи
     const [challenges, setChallenges] = useState([]);
     const [challengeTotalPages, setChallengeTotalPages] = useState(1);
     const [challengePage, setChallengePage] = useState(1);
 
+    // Категории, уровни, теги
     const [categories, setCategories] = useState([]);
     const [difficulties, setDifficulties] = useState([]);
     const [tags, setTags] = useState([]);
 
+    // Логи
     const [logs, setLogs] = useState([]);
 
     useEffect(() => {
@@ -248,7 +254,7 @@ const AdminComp = () => {
                     )}
                 </div>
 
-                {isLoading && <p className={styles.loading}>Загрузка...</p>}
+                {isLoading && <p className={styles.loading}></p>}
 
                 {!isLoading && activeTab === "users" && (
                     <UsersTable
@@ -270,34 +276,32 @@ const AdminComp = () => {
                 )}
 
                 {!isLoading && activeTab === "challenges" && (
-                    <ChallengesTable
+                    <ChallengesTab
                         challenges={challenges}
+                        setChallenges={setChallenges}
                         totalPages={challengeTotalPages}
                         currentPage={challengePage}
                         setCurrentPage={setChallengePage}
-                        deleteChallenge={deleteChallenge}
+                        fetchChallenges={fetchChallenges}
                     />
                 )}
 
                 {!isLoading && activeTab === "categories" && (
-                    <SimpleTable
-                        data={categories}
-                        columns={["id", "name", "display_name", "color_hex"]}
+                    <CategoriesTab
+                        categories={categories}
+                        setCategories={setCategories}
                     />
                 )}
 
                 {!isLoading && activeTab === "difficulties" && (
-                    <SimpleTable
-                        data={difficulties}
-                        columns={["id", "name", "display_name", "xp_reward"]}
+                    <DifficultiesTab
+                        difficulties={difficulties}
+                        setDifficulties={setDifficulties}
                     />
                 )}
 
                 {!isLoading && activeTab === "tags" && (
-                    <SimpleTable
-                        data={tags}
-                        columns={["id", "name", "color_hex"]}
-                    />
+                    <TagsTab tags={tags} setTags={setTags} />
                 )}
 
                 {!isLoading && activeTab === "logs" && (

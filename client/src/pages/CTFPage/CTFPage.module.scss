@@ -71,6 +71,19 @@
     }
 }
 
+.solvedBadge {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(4px);
+}
+
 .cardContent {
     padding: 20px;
 
