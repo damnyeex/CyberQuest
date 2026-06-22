@@ -35,6 +35,16 @@ export default function AppProvider({ children }) {
         setTimeout(() => setNotification(null), 3000);
     }, []);
 
+    const refreshUser = useCallback(async () => {
+        try {
+            const response = await userApi.getMe();
+            setUser(response.data);
+        } catch (err) {
+            Cookies.remove("token");
+            setUser(null);
+        }
+    }, []);
+
     useEffect(() => {
         const token = Cookies.get("token");
         if (token) {
@@ -79,6 +89,7 @@ export default function AppProvider({ children }) {
         isAuthLoading,
         login,
         logout,
+        refreshUser,
         showNotification,
         openLoginModal: () => setLoginModalOpen(true),
         closeLoginModal: () => setLoginModalOpen(false),

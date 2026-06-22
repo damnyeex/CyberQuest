@@ -51,7 +51,7 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    white-space: nowrap; // Предотвращает перенос текста в ячейках
+    white-space: nowrap;
 }
 
 // Заголовок таблицы
@@ -93,7 +93,7 @@
 // ID (узкая колонка)
 .colId {
     width: 60px;
-    color: $text-secondary !important;
+    color: $text-secondary;
     font-family: monospace;
 }
 
@@ -237,6 +237,23 @@
     }
     button {
         margin-left: auto;
+    }
+}
+
+.inlineForm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+
+    input,
+    select {
+        padding: 8px 12px;
+        background: $secondary-dark;
+        border: 1px solid $border-color;
+        color: $text-primary;
+        border-radius: 4px;
     }
 }
 

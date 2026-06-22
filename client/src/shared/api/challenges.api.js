@@ -29,4 +29,7 @@ export const challengesApi = {
     /** Отправить флаг (решение задачи) */
     submitFlag: (slug, flag) =>
         $authHost.post(`/challenges/${slug}/solve`, { flag }),
+
+    /** Получить список ID решённых задач текущего пользователя */
+    getMySolvedIds: () => $authHost.get("/me/solves"),
 };

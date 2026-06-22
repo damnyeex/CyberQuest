@@ -1,14 +1,14 @@
 "use client";
 import { useParams } from "next/navigation";
-import CourseIntroPage from "@/pages/CourseIntroPage/CourseIntroPage";
+import CourseDetailPage from "@/pages/CourseDetailPage/CourseDetailPage";
 import ProtectedRoute from "@/shared/lib/ProtectedRoute/ProtectedRoute";
 
 export default function Page() {
-    const { id } = useParams();
+    const { slug } = useParams();
 
     return (
         <ProtectedRoute>
-            <CourseIntroPage courseId={id} />
+            <CourseDetailPage courseSlug={slug} />
         </ProtectedRoute>
     );
 }

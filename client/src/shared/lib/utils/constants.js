@@ -4,7 +4,8 @@ export const CORRECT_FLAGS = {
     3: "CyberQuest{jdoe@securecorp.local}",
 };
 
-export const NAV_ITEMS = [
-    { id: "home", label: "Главная", icon: "FaHome" },
-    // ...
-];
+export const DIFFICULTY_LABELS = {
+    beginner: "Для начинающих",
+    intermediate: "Средний",
+    expert: "Продвинутый",
+};

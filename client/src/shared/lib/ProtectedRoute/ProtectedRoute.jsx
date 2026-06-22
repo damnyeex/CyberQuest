@@ -47,7 +47,6 @@ const ProtectedRoute = ({
         router,
     ]);
 
-    // Пока идёт загрузка — ничего не показываем (или спиннер)
     if (isAuthLoading) {
         return (
             <div
@@ -58,7 +57,7 @@ const ProtectedRoute = ({
                     minHeight: "60vh",
                 }}
             >
-                <p style={{ color: "var(--text-secondary)" }}>Загрузка...</p>
+                <p style={{ color: "var(--text-secondary)" }}></p>
             </div>
         );
     }
