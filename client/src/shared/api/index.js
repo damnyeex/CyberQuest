@@ -1,6 +1,7 @@
 export { $host, $authHost } from "./client";
 export { authApi } from "./auth.api";
 export { challengesApi } from "./challenges.api";
+export { coursesApi } from "./courses.api";
 export { categoriesApi } from "./categories.api";
 export { difficultiesApi } from "./difficulties.api";
 export { tagsApi } from "./tags.api";

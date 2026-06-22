@@ -292,6 +292,77 @@
     }
 }
 
+.taskHeader {
+    h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+}
+
+.taskMeta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.taskTag {
+    padding: 4px 10px;
+    background: rgba($accent-purple, 0.15);
+    color: $accent-purple-light;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.taskDescription {
+    p {
+        color: $text-secondary;
+        margin-bottom: 15px;
+    }
+}
+
+.flagInputSection {
+    margin-top: 20px;
+    h4 {
+        margin-bottom: 10px;
+    }
+}
+
+.flagInput {
+    display: flex;
+    gap: 10px;
+    input {
+        flex: 1;
+        padding: 10px 15px;
+        background: $secondary-dark;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        color: $text-primary;
+    }
+}
+
+.solvedMessage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    margin-top: 20px;
+    background: rgba($success, 0.1);
+    border: 1px solid $success;
+    border-radius: 8px;
+    color: $success;
+
+    .flagHistory {
+        margin-left: auto;
+        font-size: 0.9rem;
+        code {
+            background: $primary-dark;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    }
+}
+
 // Адаптивность
 @media (max-width: 768px) {
     .courseIntro {
